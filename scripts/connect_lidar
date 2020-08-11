@@ -1,0 +1,25 @@
+#!/bin/bash
+
+eth_interface="enp2s0"
+
+echo Setting uo the lidar connection
+echo Ethernet Internface used: $eth_interface 
+
+ip addr flush dev $eth_interface
+ip addr show dev $eth_interface
+
+sudo ip addr add 10.5.5.1/24 dev $eth_interface
+
+sudo ip link set $eth_interface up
+
+ip addr show dev $eth_interface
+
+read -p "Power up the lidar and connect it now, press enter when done."
+
+sudo dnsmasq -C /dev/null -kd -F 10.5.5.50,10.5.5.100 -i $eth_interface --bind-dynamic
+
+
+# roslaunch ouster_ros os1.launch os1_hostname:=os1-991935000714.local os1_udp_dest:=10.5.5.1 lidar_mode:=512x10 timestamp_mode:="TIME_FROM_PTP_1588" viz:=false
+
+
+
