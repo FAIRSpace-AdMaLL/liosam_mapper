@@ -1,13 +1,13 @@
 lio_sam:
 
   # Topics
-  pointCloudTopic: "points_raw"               # Point cloud data
-  imuTopic: "imu_raw"                         # IMU data
+  pointCloudTopic: "/os1_cloud_node/points"               # Point cloud data
+  imuTopic: "/imu/data"                         # IMU data
   odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                   # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
-  lidarFrame: "base_link"
+  lidarFrame: "os1_lidar"
   baselinkFrame: "base_link"
   odometryFrame: "odom"
   mapFrame: "map"
@@ -23,9 +23,9 @@ lio_sam:
   savePCDDirectory: "/Downloads/LOAM/"        # in your home folder, starts and ends with "/". Warning: the code deletes "LOAM" folder then recreates it. See "mapOptimization" for implementation
 
   # Sensor Settings
-  N_SCAN: 16                                  # number of lidar channel (i.e., 16, 32, 64, 128)
-  Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
-  timeField: "time"                           # point timestamp field, Velodyne - "time", Ouster - "t"
+  N_SCAN: 64                                  # number of lidar channel (i.e., 16, 32, 64, 128)
+  Horizon_SCAN: 512                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
+  timeField: "t"                           # point timestamp field, Velodyne - "time", Ouster - "t"
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1 
 
   # IMU Settings
@@ -37,18 +37,18 @@ lio_sam:
 
   # Extrinsics (lidar -> IMU)
   extrinsicTrans: [0.0, 0.0, 0.0]
-  extrinsicRot: [-1, 0, 0,
+  # extrinsicRot: [-1, 0, 0,
+  #                 0, 1, 0,
+  #                 0, 0, -1]
+  # extrinsicRPY: [0,  1, 0,
+  #                -1, 0, 0,
+  #                 0, 0, 1]
+  extrinsicRot: [1, 0, 0,
                   0, 1, 0,
-                  0, 0, -1]
-  extrinsicRPY: [0,  1, 0,
-                 -1, 0, 0,
                   0, 0, 1]
-  # extrinsicRot: [1, 0, 0,
-  #                 0, 1, 0,
-  #                 0, 0, 1]
-  # extrinsicRPY: [1, 0, 0,
-  #                 0, 1, 0,
-  #                 0, 0, 1]
+  extrinsicRPY: [1, 0, 0,
+                  0, 1, 0,
+                  0, 0, 1]
 
   # LOAM feature threshold
   edgeThreshold: 1.0
