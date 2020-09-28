@@ -55,8 +55,13 @@ int main(int argc, char** argv)
 
     ros::Rate rate(200);
     rosbag::Bag bag;
-    bag.open("/home/jaguar/longshaw3_2020-09-16-16-21-07.bag", rosbag::bagmode::Read);
- 
+    bag.open("/home/jaguar/longshaw2_2020-09-16-15-54-38.bag", rosbag::bagmode::Read);
+    
+    ROS_INFO("listening to:");
+    ROS_INFO(MO.imuTopic.c_str());
+    ROS_INFO(MO.pointCloudTopic.c_str());
+    ROS_INFO(MO.gpsTopic.c_str());
+
     std::vector<std::string> topics;
     topics.push_back(MO.imuTopic);
     topics.push_back(MO.pointCloudTopic);
@@ -69,8 +74,12 @@ int main(int argc, char** argv)
  
     if (ros::ok())
     {
+        ROS_INFO("OK!!!!");
+
         BOOST_FOREACH(rosbag::MessageInstance const m, view)
         {
+            ROS_INFO("Looping...");
+
             ros::spinOnce();
             if(MO.pubLaserOdometryGlobalFlag)
             {
@@ -127,6 +136,8 @@ int main(int argc, char** argv)
             
             rate.sleep();
         }
+
+        ROS_INFO("Reached the end of the bag.");
     }
     
     bag.close();
