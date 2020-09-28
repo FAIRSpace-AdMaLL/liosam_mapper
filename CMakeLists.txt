@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   message_generation
+  rosbag
 )
 
 find_package(OpenMP REQUIRED)
@@ -73,22 +74,42 @@ link_directories(
 ## Build ##
 ###########
 
-# Range Image Projection
-add_executable(${PROJECT_NAME}_imageProjection src/imageProjection.cpp)
+# Range Image Projection library
+add_library(${PROJECT_NAME}_imageProjection src/imageProjection.cpp)
 add_dependencies(${PROJECT_NAME}_imageProjection ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(${PROJECT_NAME}_imageProjection ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES})
 
-# Feature Association
-add_executable(${PROJECT_NAME}_featureExtraction src/featureExtraction.cpp)
+# Feature Association library
+add_library(${PROJECT_NAME}_featureExtraction src/featureExtraction.cpp)
 add_dependencies(${PROJECT_NAME}_featureExtraction ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_link_libraries(${PROJECT_NAME}_featureExtraction ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES})
 
-# Mapping Optimization
-add_executable(${PROJECT_NAME}_mapOptmization src/mapOptmization.cpp)
+# Mapping Optimization library
+add_library(${PROJECT_NAME}_mapOptmization src/mapOptmization.cpp)
 add_dependencies(${PROJECT_NAME}_mapOptmization ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
 target_compile_options(${PROJECT_NAME}_mapOptmization PRIVATE ${OpenMP_CXX_FLAGS})
 target_link_libraries(${PROJECT_NAME}_mapOptmization ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} ${OpenMP_CXX_FLAGS} gtsam)
 
-# IMU Preintegration
-add_executable(${PROJECT_NAME}_imuPreintegration src/imuPreintegration.cpp)
+# IMU Preintegration library
+add_library(${PROJECT_NAME}_imuPreintegration src/imuPreintegration.cpp)
 target_link_libraries(${PROJECT_NAME}_imuPreintegration ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES} gtsam)
+
+# Offline node excutable
+add_executable(${PROJECT_NAME}_offline
+  src/lio_sam_offline_node.cpp
+)
+
+add_dependencies(${PROJECT_NAME}_offline
+  ${catkin_EXPORTED_TARGETS}
+  ${PROJECT_NAME}_generate_messages_cpp
+)
+
+target_link_libraries(${PROJECT_NAME}_offline
+  ${catkin_LIBRARIES} 
+  ${PROJECT_NAME}_imageProjection
+  ${PROJECT_NAME}_featureExtraction
+  ${PROJECT_NAME}_mapOptmization
+  ${PROJECT_NAME}_imuPreintegration
+)
+
+# Fix lz build issue https://github.com/ethz-asl/lidar_align/issues/16#issuecomment-504348488
