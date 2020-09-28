@@ -1,5 +1,5 @@
 #include "utility.h"
-#include "mapOptimization.hpp"
+#include "mapOptmization.hpp"
 #include "lio_sam/cloud_info.h"
 
 
@@ -1405,7 +1405,7 @@ void mapOptimization::publishOdometry()
     laserOdometryROS.pose.pose.position.z = transformTobeMapped[5];
     laserOdometryROS.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(transformTobeMapped[0], transformTobeMapped[1], transformTobeMapped[2]);
     // pubLaserOdometryGlobal.publish(laserOdometryROS);
-    pubLaserOdometryGlobalPtr.reset(new nav_msgs::Odometry(laserOdometryROS))
+    pubLaserOdometryGlobalPtr.reset(new nav_msgs::Odometry(laserOdometryROS));
     pubLaserOdometryGlobalFlag = true;
 
     // Publish TF
@@ -1464,7 +1464,7 @@ void mapOptimization::publishOdometry()
             laserOdomIncremental.pose.covariance[0] = 0;
     }
     // pubLaserOdometryIncremental.publish(laserOdomIncremental);
-    pubLaserOdometryIncrementalPtr.reset(new nav_msgs::Odometry(laserOdomIncremental))
+    pubLaserOdometryIncrementalPtr.reset(new nav_msgs::Odometry(laserOdomIncremental));
     pubLaserOdometryIncrementalFlag = true;
 }
 

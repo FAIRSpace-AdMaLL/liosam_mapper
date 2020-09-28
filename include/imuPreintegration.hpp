@@ -45,7 +45,7 @@ public:
 
     Eigen::Affine3f odom2affine(nav_msgs::Odometry odom);
 
-    void lidarOdometryHandler(const nav_msgs::Odometry::ConstPtr& odomMsg)
+    void lidarOdometryHandler(const nav_msgs::Odometry::ConstPtr& odomMsg);
 
     void imuOdometryHandler(const nav_msgs::Odometry::ConstPtr& odomMsg);
 };

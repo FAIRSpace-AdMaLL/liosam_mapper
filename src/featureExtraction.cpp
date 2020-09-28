@@ -221,6 +221,6 @@ void FeatureExtraction::publishFeatureCloud()
     // publish to mapOptimization
     // pubLaserCloudInfo.publish(cloudInfo);
 
-    pubLaserCloudInfoPtr.reset(new lio_sam::cloud_info(cloudInfo))
+    pubLaserCloudInfoPtr.reset(new lio_sam::cloud_info(cloudInfo));
     pubLaserCloudInfoFlag = true;
 }

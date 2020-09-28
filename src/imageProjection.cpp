@@ -1,5 +1,5 @@
 #include "utility.h"
-#include "image.hpp"
+#include "imageProjection.hpp"
 #include "lio_sam/cloud_info.h"
 
 
@@ -371,7 +371,7 @@ void ImageProjection::findPosition(double relTime, float *posXCur, float *posYCu
     // *posZCur = ratio * odomIncreZ;
 }
 
-PointType deskewPoint(PointType *point, double relTime)
+PointType ImageProjection::deskewPoint(PointType *point, double relTime)
 {
     if (deskewFlag == -1 || cloudInfo.imuAvailable == false)
         return *point;
@@ -480,6 +480,6 @@ void ImageProjection::publishClouds()
     cloudInfo.header = cloudHeader;
     cloudInfo.cloud_deskewed  = publishCloud(&pubExtractedCloud, extractedCloud, cloudHeader.stamp, lidarFrame);
     // pubLaserCloudInfo.publish(cloudInfo);
-    pubLaserCloudInfoPtr.reset(new lio_sam::cloud_info(cloudInfo))
+    pubLaserCloudInfoPtr.reset(new lio_sam::cloud_info(cloudInfo));
     pubLaserCloudInfoFlag = true;
 }

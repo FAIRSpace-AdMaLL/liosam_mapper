@@ -412,6 +412,6 @@ void IMUPreintegration::imuHandler(const sensor_msgs::Imu::ConstPtr& imu_raw)
     odometry.twist.twist.angular.z = thisImu.angular_velocity.z + prevBiasOdom.gyroscope().z();
     // pubImuOdometry.publish(odometry);
 
-    pubImuOdometryPtr.reset(new nav_msgs::Odometry(odometry))
+    pubImuOdometryPtr.reset(new nav_msgs::Odometry(odometry));
     pubImuOdometryFlag = true;
 }

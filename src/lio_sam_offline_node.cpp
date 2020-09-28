@@ -2,7 +2,11 @@
 #include "imuPreintegration.hpp"
 #include "featureExtraction.hpp"
 #include "imageProjection.hpp"
-#include "mapOptimization.hpp"
+#include "mapOptmization.hpp"
+
+#include <rosbag/bag.h>
+#include <rosbag/view.h>
+#include <boost/foreach.hpp>
 
 // subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry", 5, &TransformFusion::lidarOdometryHandler, this, ros::TransportHints().tcpNoDelay()); Done
 // advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1); Done
@@ -55,7 +59,7 @@ int main(int argc, char** argv)
  
     std::vector<std::string> topics;
     topics.push_back(MO.imuTopic);
-    topics.push_backMO(MO.pointCloudTopic);
+    topics.push_back(MO.pointCloudTopic);
     topics.push_back(MO.gpsTopic);
  
     rosbag::View view(bag, rosbag::TopicQuery(topics)); //note:TopicQuery;TypeQuery
@@ -82,8 +86,8 @@ int main(int argc, char** argv)
 
             if(ImuP.pubImuOdometryFlag)
             {
-                TF.imuOdometryHandler(pubImuOdometryPtr);
-                IP.odometryHandler(pubImuOdometryPtr);
+                TF.imuOdometryHandler(ImuP.pubImuOdometryPtr);
+                IP.odometryHandler(ImuP.pubImuOdometryPtr);
                 ImuP.pubImuOdometryFlag = false;
             }
 
