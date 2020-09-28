@@ -119,8 +119,8 @@ bool ImageProjection::cachePointCloud(const sensor_msgs::PointCloud2ConstPtr& la
     // get timestamp
     cloudHeader = currentCloudMsg.header;
     timeScanCur = cloudHeader.stamp.toSec();
-    timeScanEnd = timeScanCur + laserCloudIn->points.back().time; // Velodyne
-    // timeScanEnd = timeScanCur + (float)laserCloudIn->points.back().t / 1000000000.0; // Ouster
+    // timeScanEnd = timeScanCur + laserCloudIn->points.back().time; // Velodyne
+    timeScanEnd = timeScanCur + (float)laserCloudIn->points.back().t / 1000000000.0; // Ouster
 
     // check dense flag
     if (laserCloudIn->is_dense == false)
@@ -439,8 +439,8 @@ void ImageProjection::projectPointCloud()
         if (rangeMat.at<float>(rowIdn, columnIdn) != FLT_MAX)
             continue;
 
-        thisPoint = deskewPoint(&thisPoint, laserCloudIn->points[i].time); // Velodyne
-        // thisPoint = deskewPoint(&thisPoint, (float)laserCloudIn->points[i].t / 1000000000.0); // Ouster
+        // thisPoint = deskewPoint(&thisPoint, laserCloudIn->points[i].time); // Velodyne
+        thisPoint = deskewPoint(&thisPoint, (float)laserCloudIn->points[i].t / 1000000000.0); // Ouster
 
         rangeMat.at<float>(rowIdn, columnIdn) = range;
 

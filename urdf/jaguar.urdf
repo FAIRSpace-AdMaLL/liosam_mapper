@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+<robot name="jaguar_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+    
+    <!-- <link name="chassis_link"></link> -->
+
+    <link name="base_link"/>
+    <!-- <joint name="base_link_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis_link" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint> -->
+
+    <!-- IMU -->
+    <link name="imu_link"/>
+    <joint name="imu_joint" type="fixed">
+        <!-- <origin rpy="0 0 0" xyz="0.525 0 0.525"/> -->
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="imu_link"/>
+    </joint>
+
+    <!-- lidar -->
+    <link name="os1_lidar"/>
+    <joint name="os1_lidar" type="fixed">
+        <!-- <origin rpy="0 0 0" xyz="0.00314 0 0.75"/> -->
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="os1_lidar"/>
+    </joint>
+</robot>

@@ -19,7 +19,7 @@ TransformFusion::TransformFusion()
     // subLaserOdometry = nh.subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry", 5, &TransformFusion::lidarOdometryHandler, this, ros::TransportHints().tcpNoDelay());
     // subImuOdometry   = nh.subscribe<nav_msgs::Odometry>(odomTopic+"_incremental",   2000, &TransformFusion::imuOdometryHandler,   this, ros::TransportHints().tcpNoDelay());
 
-    // pubImuOdometry   = nh.advertise<nav_msgs::Odometry>(odomTopic, 2000);
+    pubImuOdometry   = nh.advertise<nav_msgs::Odometry>(odomTopic, 2000);  // rviz visualization
     pubImuPath = nh.advertise<nav_msgs::Path> ("lio_sam/imu/path", 1);  // rviz visualization
 }
 
@@ -159,6 +159,7 @@ void IMUPreintegration::resetParams()
 
 void IMUPreintegration::odometryHandler(const nav_msgs::Odometry::ConstPtr& odomMsg)
 {
+    std::cout << "INNNNN\n";
     std::lock_guard<std::mutex> lock(mtx);
 
     double currentCorrectionTime = ROS_TIME(odomMsg);
@@ -220,6 +221,7 @@ void IMUPreintegration::odometryHandler(const nav_msgs::Odometry::ConstPtr& odom
         
         key = 1;
         systemInitialized = true;
+        std::cout << "OUTTT\n";
         return;
     }
 

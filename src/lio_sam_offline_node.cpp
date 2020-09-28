@@ -86,11 +86,15 @@ int main(int argc, char** argv)
                 TF.lidarOdometryHandler(MO.pubLaserOdometryGlobalPtr);
                 MO.pubLaserOdometryGlobalFlag = false;
             }
+            ROS_INFO("LOL1");
 
             if(MO.pubLaserOdometryIncrementalFlag)
             {
+                ROS_INFO("LOL2");
                 ImuP.odometryHandler(MO.pubLaserOdometryIncrementalPtr);
+                ROS_INFO("LOL3");
                 MO.pubLaserOdometryIncrementalFlag = false;
+                ROS_INFO("LOL4");
             }
 
             if(ImuP.pubImuOdometryFlag)
@@ -105,7 +109,7 @@ int main(int argc, char** argv)
                 FE.laserCloudInfoHandler(IP.pubLaserCloudInfoPtr);
                 IP.pubLaserCloudInfoFlag = false;
             }
-            
+
             if(FE.pubLaserCloudInfoFlag)
             {
                 MO.laserCloudInfoHandler(IP.pubLaserCloudInfoPtr);
@@ -126,14 +130,14 @@ int main(int argc, char** argv)
                 ROS_INFO("Pub a PointCloud");
                 IP.cloudHandler(pointcloud_msg);
             }
-            
+
             nav_msgs::Odometry::ConstPtr gps_msg = m.instantiate<nav_msgs::Odometry>();
             if (gps_msg)
             {
                 ROS_INFO("Pub a GPS msg");
                 MO.gpsHandler(gps_msg);
             }
-            
+
             rate.sleep();
         }
 
