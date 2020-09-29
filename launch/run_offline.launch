@@ -13,9 +13,6 @@
 
     <!--- Run Navsat -->
     <include file="$(find lio_sam)/launch/include/module_navsat.launch"/>
-    
-    <!--- Run ouster lidar and  MTi IMU -->
-    <include file="$(find lio_sam)/launch/include/start_sensors.launch"/>
 
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch"/>
