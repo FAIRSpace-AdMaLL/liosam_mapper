@@ -43,7 +43,7 @@ mapOptimization::mapOptimization()
     allocateMemory();
 }
 
-void mapOptimization::mapOptimization::allocateMemory()
+void mapOptimization::allocateMemory()
 {
     cloudKeyPoses3D.reset(new pcl::PointCloud<PointType>());
     cloudKeyPoses6D.reset(new pcl::PointCloud<PointTypePose>());

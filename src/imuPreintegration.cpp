@@ -159,7 +159,6 @@ void IMUPreintegration::resetParams()
 
 void IMUPreintegration::odometryHandler(const nav_msgs::Odometry::ConstPtr& odomMsg)
 {
-    std::cout << "INNNNN\n";
     std::lock_guard<std::mutex> lock(mtx);
 
     double currentCorrectionTime = ROS_TIME(odomMsg);

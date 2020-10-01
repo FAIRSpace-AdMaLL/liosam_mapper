@@ -9,24 +9,24 @@
 #include <boost/foreach.hpp>
 
 // subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry", 5, &TransformFusion::lidarOdometryHandler, this, ros::TransportHints().tcpNoDelay()); Done
-// advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1); Done
+// pubLaserOdometryGlobal = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1); Done
 
 
 // subscribe<nav_msgs::Odometry>(odomTopic+"_incremental",   2000, &TransformFusion::imuOdometryHandler,   this, ros::TransportHints().tcpNoDelay()); Done
 // subscribe<nav_msgs::Odometry>(odomTopic+"_incremental", 2000, &ImageProjection::odometryHandler, this, ros::TransportHints().tcpNoDelay()); Done
-// advertise<nav_msgs::Odometry>(odomTopic+"_incremental", 2000); Done
+// pubImuOdometry = nh.advertise<nav_msgs::Odometry> (odomTopic+"_incremental", 2000); Done
 
 
 // subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry_incremental", 5, &IMUPreintegration::odometryHandler, this, ros::TransportHints().tcpNoDelay()); Done
-// advertise<nav_msgs::Odometry>("lio_sam/mapping/odometry_incremental", 1); Done
+// pubLaserOdometryIncremental = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry_incremental", 1); Done
 
 
 // subscribe<lio_sam::cloud_info>("lio_sam/deskew/cloud_info", 1, &FeatureExtraction::laserCloudInfoHandler, this, ros::TransportHints().tcpNoDelay()); Done
-// advertise<lio_sam::cloud_info>("lio_sam/deskew/cloud_info", 1); Done
+// pubLaserCloudInfo = nh.advertise<lio_sam::cloud_info> ("lio_sam/deskew/cloud_info", 1); Done
 
 
 // subscribe<lio_sam::cloud_info>("lio_sam/feature/cloud_info", 1, &mapOptimization::laserCloudInfoHandler, this, ros::TransportHints().tcpNoDelay()); Done
-// advertise<lio_sam::cloud_info>("lio_sam/feature/cloud_info", 1); Done
+// pubLaserCloudInfo = nh.advertise<lio_sam::cloud_info> ("lio_sam/feature/cloud_info", 1); Done
 
 // subscribe<sensor_msgs::PointCloud2>(pointCloudTopic, 5, &ImageProjection::cloudHandler, this, ros::TransportHints().tcpNoDelay()); Done
 
@@ -78,23 +78,19 @@ int main(int argc, char** argv)
 
         BOOST_FOREACH(rosbag::MessageInstance const m, view)
         {
+            ros::spinOnce();
             ROS_INFO("Looping...");
 
-            ros::spinOnce();
             if(MO.pubLaserOdometryGlobalFlag)
             {
                 TF.lidarOdometryHandler(MO.pubLaserOdometryGlobalPtr);
                 MO.pubLaserOdometryGlobalFlag = false;
             }
-            ROS_INFO("LOL1");
 
             if(MO.pubLaserOdometryIncrementalFlag)
             {
-                ROS_INFO("LOL2");
                 ImuP.odometryHandler(MO.pubLaserOdometryIncrementalPtr);
-                ROS_INFO("LOL3");
                 MO.pubLaserOdometryIncrementalFlag = false;
-                ROS_INFO("LOL4");
             }
 
             if(ImuP.pubImuOdometryFlag)
@@ -112,8 +108,8 @@ int main(int argc, char** argv)
 
             if(FE.pubLaserCloudInfoFlag)
             {
-                MO.laserCloudInfoHandler(IP.pubLaserCloudInfoPtr);
-                IP.pubLaserCloudInfoFlag = false;
+                MO.laserCloudInfoHandler(FE.pubLaserCloudInfoPtr);
+                FE.pubLaserCloudInfoFlag = false;
             }
 
             sensor_msgs::Imu::ConstPtr imu_msg = m.instantiate<sensor_msgs::Imu>();
