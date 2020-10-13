@@ -618,7 +618,7 @@ public:
         loopKeyCur = cloudSize - 1;
         for (int i = cloudSize - 1; i >= 0; --i)
         {
-            if (copy_cloudKeyPoses6D->points[i].time > loopTimeCur)
+            if (copy_cloudKeyPoses6D->points[i].time >= loopTimeCur)
                 loopKeyCur = round(copy_cloudKeyPoses6D->points[i].intensity);
             else
                 break;
@@ -628,7 +628,7 @@ public:
         loopKeyPre = 0;
         for (int i = 0; i < cloudSize; ++i)
         {
-            if (copy_cloudKeyPoses6D->points[i].time < loopTimePre)
+            if (copy_cloudKeyPoses6D->points[i].time <= loopTimePre)
                 loopKeyPre = round(copy_cloudKeyPoses6D->points[i].intensity);
             else
                 break;
@@ -1194,7 +1194,8 @@ public:
             matP = matV.inv() * matV2;
         }
 
-        if (isDegenerate) {
+        if (isDegenerate)
+        {
             cv::Mat matX2(6, 1, CV_32F, cv::Scalar::all(0));
             matX.copyTo(matX2);
             matX = matP * matX2;
@@ -1258,7 +1259,7 @@ public:
         {
             if (std::abs(cloudInfo.imuPitchInit) < 1.4)
             {
-                double imuWeight = 0.01;
+                double imuWeight = imuRPYWeight;
                 tf::Quaternion imuQuaternion;
                 tf::Quaternion transformQuaternion;
                 double rollMid, pitchMid, yawMid;
@@ -1579,6 +1580,7 @@ public:
         laserOdometryROS.pose.pose.position.z = transformTobeMapped[5];
         laserOdometryROS.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(transformTobeMapped[0], transformTobeMapped[1], transformTobeMapped[2]);
         pubLaserOdometryGlobal.publish(laserOdometryROS);
+        
         // Publish TF
         static tf::TransformBroadcaster br;
         tf::Transform t_odom_to_lidar = tf::Transform(tf::createQuaternionFromRPY(transformTobeMapped[0], transformTobeMapped[1], transformTobeMapped[2]),
@@ -1604,14 +1606,21 @@ public:
             {
                 if (std::abs(cloudInfo.imuPitchInit) < 1.4)
                 {
-                    double imuWeight = 0.01;
+                    double imuWeight = 0.1;
                     tf::Quaternion imuQuaternion;
                     tf::Quaternion transformQuaternion;
                     double rollMid, pitchMid, yawMid;
-                    transformQuaternion.setRPY(roll, pitch, 0);
-                    imuQuaternion.setRPY(cloudInfo.imuRollInit, cloudInfo.imuPitchInit, 0);
+
+                    // slerp roll
+                    transformQuaternion.setRPY(roll, 0, 0);
+                    imuQuaternion.setRPY(cloudInfo.imuRollInit, 0, 0);
                     tf::Matrix3x3(transformQuaternion.slerp(imuQuaternion, imuWeight)).getRPY(rollMid, pitchMid, yawMid);
                     roll = rollMid;
+
+                    // slerp pitch
+                    transformQuaternion.setRPY(0, pitch, 0);
+                    imuQuaternion.setRPY(0, cloudInfo.imuPitchInit, 0);
+                    tf::Matrix3x3(transformQuaternion.slerp(imuQuaternion, imuWeight)).getRPY(rollMid, pitchMid, yawMid);
                     pitch = pitchMid;
                 }
             }
@@ -1622,6 +1631,10 @@ public:
             laserOdomIncremental.pose.pose.position.y = y;
             laserOdomIncremental.pose.pose.position.z = z;
             laserOdomIncremental.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
+            if (isDegenerate)
+                laserOdomIncremental.pose.covariance[0] = 1;
+            else
+                laserOdomIncremental.pose.covariance[0] = 0;
         }
         pubLaserOdometryIncremental.publish(laserOdomIncremental);
     }
