@@ -203,8 +203,8 @@ public:
         // get timestamp
         cloudHeader = currentCloudMsg.header;
         timeScanCur = cloudHeader.stamp.toSec();
-        timeScanEnd = timeScanCur + laserCloudIn->points.back().time; // Velodyne
-        // timeScanEnd = timeScanCur + (float)laserCloudIn->points.back().t / 1000000000.0; // Ouster
+        // timeScanEnd = timeScanCur + laserCloudIn->points.back().time; // Velodyne
+        timeScanEnd = timeScanCur + (float)laserCloudIn->points.back().t / 1000000000.0; // Ouster
 
         // check dense flag
         if (laserCloudIn->is_dense == false)

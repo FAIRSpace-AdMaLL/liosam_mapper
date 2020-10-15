@@ -13,6 +13,7 @@
 
     <!--- Run Navsat -->
     <include file="$(find lio_sam)/launch/include/module_navsat.launch"/>
+    <node pkg="lio_sam" type="frames_fixer.py" name="frames_fixer"/>
 
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch"/>

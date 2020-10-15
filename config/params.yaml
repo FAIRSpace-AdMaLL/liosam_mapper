@@ -1,10 +1,10 @@
 lio_sam:
 
   # Topics
-  pointCloudTopic: "/os1_cloud_node/points"               # Point cloud data
+  pointCloudTopic: "/os1_cloud_node/points"     # Point cloud data
   imuTopic: "/imu/data"                         # IMU data
-  odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "odometry/gpsz"                   # GPS odometry topic from navsat, see module_navsat.launch file
+  odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
+  gpsTopic: "odometry/gps"                      # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
   lidarFrame: "os1_lidar"
@@ -14,7 +14,7 @@ lio_sam:
 
   # GPS Settings
   useImuHeadingInitialization: true           # if using GPS data, set to "true"
-  useGpsElevation: false                      # if GPS elevation is bad, set to "false"
+  useGpsElevation: true                       # if GPS elevation is bad, set to "false"
   gpsCovThreshold: 2.0                        # m^2, threshold for using GPS data
   poseCovThreshold: 25.0                      # m^2, threshold for using GPS data
   
@@ -65,8 +65,8 @@ lio_sam:
   mappingSurfLeafSize: 0.4                      # default: 0.4 - outdoor, 0.2 - indoor
 
   # robot motion constraint (in case you are using a 2D robot)
-  z_tollerance: 1000                            # meters
-  rotation_tollerance: 1000                     # radians
+  z_tollerance: 0.5                            # meters
+  rotation_tollerance: 0.1                     # radians
 
   # CPU Params
   numberOfCores: 4                              # number of cores for mapping optimization
@@ -96,6 +96,10 @@ lio_sam:
 
 
 # Navsat (convert GPS coordinates to Cartesian)
+# Subscribes imu_correct
+# Subscribes gps/fix
+# Subscribes odometry/navsat
+# publishes odometry/gps
 navsat:
   frequency: 50
   wait_for_datum: false
@@ -108,6 +112,9 @@ navsat:
   publish_filtered_gps: false
 
 # EKF for Navsat
+# Publishes odometry/navsat
+# Subscribes imu_correct
+# Subscribes odometry/gps
 ekf_gps:
   publish_tf: false
   map_frame: map
