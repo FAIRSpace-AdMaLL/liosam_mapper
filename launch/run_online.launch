@@ -1,7 +1,7 @@
 <launch>
 
     <!--- Run Navsat -->
-    <include file="$(find lio_sam)/launch/run.launch" />
+    <include file="$(find lio_sam)/launch/run_offline.launch" />
 
     <!--- Run ouster lidar and  MTi IMU -->
     <include file="$(find lio_sam)/launch/include/start_sensors.launch"/>
