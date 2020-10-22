@@ -54,8 +54,8 @@ int main(int argc, char** argv)
     std::thread visualizeMapThread(&mapOptimization::visualizeGlobalMapThread, &MO);
 
     ros::Rate rate(200);
-    rosbag::Bag bag;
-    bag.open("/home/jaguar/longshaw2_2020-09-16-15-54-38.bag", rosbag::bagmode::Read);
+    rosbag::Bag read_bag;
+    read_bag.open(MO.readBag, rosbag::bagmode::Read);
     
     ROS_INFO("listening to:");
     ROS_INFO(MO.imuTopic.c_str());
@@ -65,9 +65,9 @@ int main(int argc, char** argv)
     std::vector<std::string> topics;
     topics.push_back(MO.imuTopic);
     topics.push_back(MO.pointCloudTopic);
-    topics.push_back(MO.gpsTopic);
+    // topics.push_back(MO.gpsTopic);
  
-    rosbag::View view(bag, rosbag::TopicQuery(topics)); //note:TopicQuery;TypeQuery
+    rosbag::View view(read_bag, rosbag::TopicQuery(topics)); //note:TopicQuery;TypeQuery
 	
     boost::shared_ptr<sensor_msgs::Imu> IMUptr;
     boost::shared_ptr<sensor_msgs::PointCloud2> RawCloudptr;
@@ -127,23 +127,36 @@ int main(int argc, char** argv)
                 IP.cloudHandler(pointcloud_msg);
             }
 
-            nav_msgs::Odometry::ConstPtr gps_msg = m.instantiate<nav_msgs::Odometry>();
-            if (gps_msg)
-            {
-                ROS_INFO("Pub a GPS msg");
-                MO.gpsHandler(gps_msg);
-            }
-
+            // nav_msgs::Odometry::ConstPtr gps_msg = m.instantiate<nav_msgs::Odometry>();
+            // if (gps_msg)
+            // {
+            //     ROS_INFO("Pub a GPS msg");
+            //     MO.gpsHandler(gps_msg);
+            // }
             rate.sleep();
         }
 
         ROS_INFO("Reached the end of the bag.");
     }
     
-    bag.close();
+    read_bag.close();
+
+    rosbag::Bag write_bag;
+    write_bag.open(MO.writeBag, rosbag::bagmode::Write);
+
+    ROS_INFO("Saving global map and path to %s", MO.writeBag.c_str());
+
+    write_bag.write("/lio_sam/mapping/map_global", ros::Time::now(), MO.globalMapToSave);
+    write_bag.write("/lio_sam/mapping/path", ros::Time::now(), MO.globalPath);
+    
+    ROS_INFO("Saved!");
+
+    write_bag.close();
 
     loopthread.join();
     visualizeMapThread.join();
+
+    ros::shutdown();
 
     return 0;
 }

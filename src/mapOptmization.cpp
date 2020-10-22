@@ -283,7 +283,8 @@ void mapOptimization::publishGlobalMap()
     downSizeFilterGlobalMapKeyFrames.setLeafSize(globalMapVisualizationLeafSize, globalMapVisualizationLeafSize, globalMapVisualizationLeafSize); // for global map visualization
     downSizeFilterGlobalMapKeyFrames.setInputCloud(globalMapKeyFrames);
     downSizeFilterGlobalMapKeyFrames.filter(*globalMapKeyFramesDS);
-    publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame);
+    globalMapToSave = publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame);
+    ROS_ERROR_STREAM("LOOL " << globalMapToSave.header.frame_id);
 }
 
 void mapOptimization::loopClosureThread()
@@ -1500,5 +1501,6 @@ void mapOptimization::publishFrames()
         globalPath.header.stamp = timeLaserInfoStamp;
         globalPath.header.frame_id = odometryFrame;
         pubPath.publish(globalPath);
+        // 
     }
 }

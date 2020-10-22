@@ -143,6 +143,7 @@ public:
     deque<std_msgs::Float64MultiArray> loopInfoVec;
 
     nav_msgs::Path globalPath;
+    sensor_msgs::PointCloud2 globalMapToSave;
 
     Eigen::Affine3f transPointAssociateToMap;
     Eigen::Affine3f incrementalOdometryAffineFront;

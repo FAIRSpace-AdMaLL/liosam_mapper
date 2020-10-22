@@ -5,6 +5,12 @@ lio_sam:
   imuTopic: "/imu/data"                         # IMU data
   odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                   # GPS odometry topic from navsat, see module_navsat.launch file
+  # readBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/around_church_afternoon_0_2020-10-17-15-56-00.bag"
+  # writeBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/output_around_church_afternoon_0.bag"
+  # readBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/zed_nn_night_1_2020-10-17-23-05-22.bag"
+  # writeBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/output_zed_nn_night_1.bag"
+  readBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/zed_nn_night_0_2020-10-17-22-25-39.bag"
+  writeBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/output_zed_nn_night_0.bag"
 
   # Frames
   lidarFrame: "os1_lidar"
@@ -28,7 +34,7 @@ lio_sam:
   timeField: "t"                           # point timestamp field, Velodyne - "time", Ouster - "t"
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1 
   lidarMinRange: 1.0                          # default: 1.0, minimum lidar range to be used
-  lidarMaxRange: 1000.0                       # default: 1000.0, maximum lidar range to be used
+  lidarMaxRange: 20                       # default: 1000.0, maximum lidar range to be used
 
   # IMU Settings
   imuAccNoise: 3.9939570888238808e-03
@@ -90,7 +96,7 @@ lio_sam:
   # Visualization
   globalMapVisualizationSearchRadius: 1000.0    # meters, global map visualization radius
   globalMapVisualizationPoseDensity: 10.0       # meters, global map visualization keyframe density
-  globalMapVisualizationLeafSize: 1.0           # meters, global map visualization cloud density
+  globalMapVisualizationLeafSize: 0.2           # meters, global map visualization cloud density
 
 
 

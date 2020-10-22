@@ -1,10 +1,12 @@
 <?xml version="1.0" ?>
 <robot name="jaguar_robot" xmlns:xacro="http://ros.org/wiki/xacro">
     
-    <!-- <link name="chassis_link"></link> -->
+    <xacro:property name="PI" value="3.1415926535897931" />
 
+    <!-- The base_link is assumed to be defined as the geometric center point of the side panel of the robot -->
     <link name="base_link"/>
-    <!-- <joint name="base_link_joint" type="fixed">
+    <!-- <link name="chassis_link"></link>
+    <joint name="base_link_joint" type="fixed">
         <parent link="base_link"/>
         <child link="chassis_link" />
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -13,18 +15,32 @@
     <!-- IMU -->
     <link name="imu_link"/>
     <joint name="imu_joint" type="fixed">
-        <!-- <origin rpy="0 0 0" xyz="0.525 0 0.525"/> -->
-        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <origin rpy="0 0 0" xyz="0.14653 0 0.34964"/>
         <parent link="base_link"/>
         <child link="imu_link"/>
     </joint>
 
-    <!-- lidar -->
+    <!-- OS1 lidar -->
     <link name="os1_lidar"/>
-    <joint name="os1_lidar" type="fixed">
-        <!-- <origin rpy="0 0 0" xyz="0.00314 0 0.75"/> -->
-        <origin rpy="0 0 0" xyz="0 0 0"/>
+    <joint name="os1_lidar_joint" type="fixed">
+        <origin rpy="0 0 ${PI}" xyz="-0.01936 0 0.64805"/>
         <parent link="base_link"/>
         <child link="os1_lidar"/>
     </joint>
+
+    <!-- GPS -->
+    <link name="navsat_link"> </link>
+    <joint name="navsat_joint" type="fixed">
+      <parent link="base_link" />
+      <child link="navsat_link" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+     <!-- Zed2 -->
+     <!-- <link name="zed2_camera_center"/>
+     <joint name="zed2_camera_joint" type="fixed">
+         <origin rpy="0 0 0" xyz="0.21866 0 0.34919"/>
+         <parent link="camera_frame"/>
+         <child link="zed2_camera_center"/>
+     </joint> -->
 </robot>
