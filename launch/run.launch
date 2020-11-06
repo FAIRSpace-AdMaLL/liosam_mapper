@@ -14,6 +14,8 @@
     <!--- Run Navsat -->
     <include file="$(find lio_sam)/launch/include/module_navsat.launch"/>
 
+    <include file="$(find lio_sam)/launch/plot.launch"/>
+
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch"/>
 
