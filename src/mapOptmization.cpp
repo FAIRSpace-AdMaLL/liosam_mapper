@@ -19,7 +19,7 @@ mapOptimization::mapOptimization()
 
     pubKeyPoses                 = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/trajectory", 1);  // rviz visualization
     pubLaserCloudSurround       = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/map_global", 1);  // rviz visualization
-    // pubLaserOdometryGlobal      = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1);
+    pubLaserOdometryGlobal      = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1);  // rviz visualization
     // pubLaserOdometryIncremental = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry_incremental", 1);
     pubPath = nh.advertise<nav_msgs::Path>("lio_sam/mapping/path", 1);  // rviz visualization
 
@@ -1405,7 +1405,7 @@ void mapOptimization::publishOdometry()
     laserOdometryROS.pose.pose.position.y = transformTobeMapped[4];
     laserOdometryROS.pose.pose.position.z = transformTobeMapped[5];
     laserOdometryROS.pose.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(transformTobeMapped[0], transformTobeMapped[1], transformTobeMapped[2]);
-    // pubLaserOdometryGlobal.publish(laserOdometryROS);
+    pubLaserOdometryGlobal.publish(laserOdometryROS);
     pubLaserOdometryGlobalPtr.reset(new nav_msgs::Odometry(laserOdometryROS));
     pubLaserOdometryGlobalFlag = true;
 
