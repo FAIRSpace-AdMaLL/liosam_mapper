@@ -19,7 +19,7 @@ TransformFusion::TransformFusion()
     // subLaserOdometry = nh.subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry", 5, &TransformFusion::lidarOdometryHandler, this, ros::TransportHints().tcpNoDelay());
     // subImuOdometry   = nh.subscribe<nav_msgs::Odometry>(odomTopic+"_incremental",   2000, &TransformFusion::imuOdometryHandler,   this, ros::TransportHints().tcpNoDelay());
 
-    pubImuOdometry   = nh.advertise<nav_msgs::Odometry>(odomTopic, 2000);  // rviz visualization
+    pubImuOdometry   = nh.advertise<nav_msgs::Odometry>(odomTopic, 2000);  // rviz visualization topic: /odometry/imu
     pubImuPath = nh.advertise<nav_msgs::Path> ("lio_sam/imu/path", 1);  // rviz visualization
 }
 
