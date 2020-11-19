@@ -1,7 +1,10 @@
 <launch>
-    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" 
+    <!-- <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" 
         args="/lio_sam/mapping/odometry/pose/pose/position/x
             /lio_sam/mapping/odometry/pose/pose/position/y
             /odometry/imu/pose/pose/position/x
-            /odometry/imu/pose/pose/position/y" />
+            /odometry/imu/pose/pose/position/y" /> -->
+    
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot" 
+        args="/yaw/imu /yaw/lidar /debug/raw_yaw" />
 </launch>
