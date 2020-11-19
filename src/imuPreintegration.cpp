@@ -17,7 +17,7 @@ TransformFusion::TransformFusion()
     }
 
     // subLaserOdometry = nh.subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry", 5, &TransformFusion::lidarOdometryHandler, this, ros::TransportHints().tcpNoDelay());
-    // subImuOdometry   = nh.subscribe<nav_msgs::Odometry>(odomTopic+"_incremental",   2000, &TransformFusion::imuOdometryHandler,   this, ros::TransportHints().tcpNoDelay());
+    // subImuOdometry   = nh.subscribe<nav_msgs::Odometry>(odomTopic+"_incremental", 2000, &TransformFusion::imuOdometryHandler, this, ros::TransportHints().tcpNoDelay()); // odometry/imu_incremental
 
     pubImuOdometry   = nh.advertise<nav_msgs::Odometry>(odomTopic, 2000);  // rviz visualization topic: /odometry/imu
     pubImuPath = nh.advertise<nav_msgs::Path> ("lio_sam/imu/path", 1);  // rviz visualization
@@ -114,10 +114,10 @@ void TransformFusion::imuOdometryHandler(const nav_msgs::Odometry::ConstPtr& odo
 
 IMUPreintegration::IMUPreintegration()
 {
-    // subImu      = nh.subscribe<sensor_msgs::Imu>  (imuTopic,                   2000, &IMUPreintegration::imuHandler,      this, ros::TransportHints().tcpNoDelay());
-    // subOdometry = nh.subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry_incremental", 5,    &IMUPreintegration::odometryHandler, this, ros::TransportHints().tcpNoDelay());
+    // subImu      = nh.subscribe<sensor_msgs::Imu>(imuTopic, 2000, &IMUPreintegration::imuHandler, this, ros::TransportHints().tcpNoDelay());
+    // subOdometry = nh.subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry_incremental", 5, &IMUPreintegration::odometryHandler, this, ros::TransportHints().tcpNoDelay());
 
-    // pubImuOdometry = nh.advertise<nav_msgs::Odometry> (odomTopic+"_incremental", 2000);
+    // pubImuOdometry = nh.advertise<nav_msgs::Odometry>(odomTopic+"_incremental", 2000); // odometry/imu_incremental
 
     boost::shared_ptr<gtsam::PreintegrationParams> p = gtsam::PreintegrationParams::MakeSharedU(imuGravity);
     p->accelerometerCovariance  = gtsam::Matrix33::Identity(3,3) * pow(imuAccNoise, 2); // acc white noise in continuous
