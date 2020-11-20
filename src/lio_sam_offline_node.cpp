@@ -53,10 +53,10 @@ int main(int argc, char** argv)
     std::thread loopthread(&mapOptimization::loopClosureThread, &MO);
     std::thread visualizeMapThread(&mapOptimization::visualizeGlobalMapThread, &MO);
 
-    ros::Rate rate(200);
+    ros::Rate rate(MO.loopRate);
     rosbag::Bag read_bag;
     read_bag.open(MO.readBag, rosbag::bagmode::Read);
-    
+
     ROS_INFO("listening to:");
     ROS_INFO(MO.imuTopic.c_str());
     ROS_INFO(MO.pointCloudTopic.c_str());
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
         BOOST_FOREACH(rosbag::MessageInstance const m, view)
         {
             ros::spinOnce();
-            ROS_INFO("Looping...");
+            // ROS_INFO("Looping...");
 
             if(MO.pubLaserOdometryGlobalFlag)
             {
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
             sensor_msgs::Imu::ConstPtr imu_msg = m.instantiate<sensor_msgs::Imu>();
             if (imu_msg)
             {
-                ROS_INFO("Pub an IMU msg");
+                // ROS_INFO("Pub an IMU msg");
                 ImuP.imuHandler(imu_msg);
                 IP.imuHandler(imu_msg);
             }
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
             sensor_msgs::PointCloud2::ConstPtr pointcloud_msg = m.instantiate<sensor_msgs::PointCloud2>();
             if (pointcloud_msg)
             {
-                ROS_INFO("Pub a PointCloud");
+                // ROS_INFO("Pub a PointCloud");
                 IP.cloudHandler(pointcloud_msg);
             }
 
@@ -153,8 +153,8 @@ int main(int argc, char** argv)
 
     write_bag.close();
 
-    loopthread.join();
-    visualizeMapThread.join();
+    loopthread.detach();
+    visualizeMapThread.detach();
 
     ros::shutdown();
 
