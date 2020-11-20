@@ -148,6 +148,9 @@ public:
     float globalMapVisualizationPoseDensity;
     float globalMapVisualizationLeafSize;
 
+    double loopRate;
+    int LMOMaxIterations;
+
     std::string readBag;
     std::string writeBag;
 
@@ -161,6 +164,8 @@ public:
         nh.param<std::string>("lio_sam/gpsTopic", gpsTopic, "odometry/gps");
         nh.param<std::string>("lio_sam/readBag", readBag, "");
         nh.param<std::string>("lio_sam/writeBag", writeBag, "");
+        nh.param<double>("lio_sam/loopRate", loopRate, 1000000.0);
+        nh.param<int>("lio_sam/LMOMaxIterations", LMOMaxIterations, 30);
 
         nh.param<std::string>("lio_sam/lidarFrame", lidarFrame, "base_link");
         nh.param<std::string>("lio_sam/baselinkFrame", baselinkFrame, "base_link");

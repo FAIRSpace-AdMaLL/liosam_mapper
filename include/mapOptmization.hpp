@@ -71,6 +71,10 @@ public:
     ros::Publisher pubRecentKeyFrame;
     ros::Publisher pubCloudRegisteredRaw;
     ros::Publisher pubLoopConstraintEdge;
+    ros::Publisher map_extracted_surf;
+    ros::Publisher map_extracted_cor;
+    ros::Publisher debug_transformed_cloud;
+    ros::Publisher pubRawYaw;
 
     ros::Subscriber subCloud;
     ros::Subscriber subGPS;

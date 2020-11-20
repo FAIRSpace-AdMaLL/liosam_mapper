@@ -1,16 +1,16 @@
 lio_sam:
 
   # Topics
-  pointCloudTopic: "/os1_cloud_node/points"               # Point cloud data
+  pointCloudTopic: "/os1_cloud_node/points"     # Point cloud data
   imuTopic: "/imu/data"                         # IMU data
-  odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "odometry/gpsz"                   # GPS odometry topic from navsat, see module_navsat.launch file
-  # readBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/around_church_afternoon_0_2020-10-17-15-56-00.bag"
-  # writeBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/output_around_church_afternoon_0.bag"
-  # readBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/zed_nn_night_1_2020-10-17-23-05-22.bag"
-  # writeBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/output_zed_nn_night_1.bag"
-  readBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/zed_nn_night_0_2020-10-17-22-25-39.bag"
-  writeBag: "/media/marwan/external_drive/ICRA_2021/around_church_17_10/output_zed_nn_night_0.bag"
+  odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
+  gpsTopic: "odometry/gpsz"                     # GPS odometry topic from navsat, see module_navsat.launch file
+
+  readBag: "/media/marwan/external_drive/aggressive_manoeuvres/angular_aggressive_0.bag"
+  writeBag: "/home/marwan/lol.bag"
+  
+  LMOMaxIterations: 50                          # 60 --> works, 30 --> fails
+  # loopRate: 70.0
 
   # Frames
   lidarFrame: "os1_lidar"
@@ -34,7 +34,7 @@ lio_sam:
   timeField: "t"                           # point timestamp field, Velodyne - "time", Ouster - "t"
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1 
   lidarMinRange: 1.0                          # default: 1.0, minimum lidar range to be used
-  lidarMaxRange: 20                       # default: 1000.0, maximum lidar range to be used
+  lidarMaxRange: 200.0                       # default: 1000.0, maximum lidar range to be used
 
   # IMU Settings
   imuAccNoise: 3.9939570888238808e-03
@@ -75,17 +75,17 @@ lio_sam:
   rotation_tollerance: 1000                     # radians
 
   # CPU Params
-  numberOfCores: 4                              # number of cores for mapping optimization
-  mappingProcessInterval: 0.15                  # seconds, regulate mapping frequency
+  numberOfCores: 10                              # number of cores for mapping optimization
+  mappingProcessInterval: 0.015                  # seconds, regulate mapping frequency. default 0.15
 
   # Surrounding map
   surroundingkeyframeAddingDistThreshold: 1.0   # meters, regulate keyframe adding threshold
-  surroundingkeyframeAddingAngleThreshold: 0.2  # radians, regulate keyframe adding threshold
+  surroundingkeyframeAddingAngleThreshold: 0.05 # radians, regulate keyframe adding threshold
   surroundingKeyframeDensity: 2.0               # meters, downsample surrounding keyframe poses   
   surroundingKeyframeSearchRadius: 50.0         # meters, within n meters scan-to-map optimization (when loop closure disabled)
 
   # Loop closure
-  loopClosureEnableFlag: true
+  loopClosureEnableFlag: false
   loopClosureFrequency: 1.0                     # Hz, regulate loop closure constraint add frequency
   surroundingKeyframeSize: 50                   # submap size (when loop closure enabled)
   historyKeyframeSearchRadius: 15.0             # meters, key frame that is within n meters from current pose will be considerd for loop closure

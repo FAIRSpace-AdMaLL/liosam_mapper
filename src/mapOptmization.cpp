@@ -1,6 +1,7 @@
 #include "utility.h"
 #include "mapOptmization.hpp"
 #include "lio_sam/cloud_info.h"
+#include "std_msgs/Float64.h"
 
 
 using namespace gtsam;
@@ -30,6 +31,11 @@ mapOptimization::mapOptimization()
     pubHistoryKeyFrames   = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/icp_loop_closure_history_cloud", 1);  // rviz visualization
     pubIcpKeyFrames       = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/icp_loop_closure_corrected_cloud", 1);  // rviz visualization
     pubLoopConstraintEdge = nh.advertise<visualization_msgs::MarkerArray>("/lio_sam/mapping/loop_closure_constraints", 1);  // rviz visualization
+ 
+    pubRawYaw = nh.advertise<std_msgs::Float64>("debug/raw_yaw", 1);
+    map_extracted_cor = nh.advertise<sensor_msgs::PointCloud2>("debug/map_cor_keypoints", 1);
+    map_extracted_surf = nh.advertise<sensor_msgs::PointCloud2>("debug/map_surf_keypoints", 1);
+    debug_transformed_cloud = nh.advertise<sensor_msgs::PointCloud2>("debug/tf_init", 1);
 
     pubRecentKeyFrames    = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/map_local", 1);  // rviz visualization
     pubRecentKeyFrame = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/cloud_registered", 1);  // rviz visualization
@@ -598,6 +604,27 @@ void mapOptimization::updateInitialGuess()
             lastImuPreTransformation = transBack;
 
             lastImuTransformation = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); // save imu before return;
+
+            PointTypePose temp_pose;
+            temp_pose.x = transformTobeMapped[3];
+            temp_pose.y = transformTobeMapped[4];
+            temp_pose.z = transformTobeMapped[5];
+            temp_pose.roll  = transformTobeMapped[0];
+            temp_pose.pitch = transformTobeMapped[1];
+            temp_pose.yaw   = transformTobeMapped[2];
+
+            cout << "cloud key poses size: init="
+                << cloudInfo.initialGuessYaw << " tf="
+                << temp_pose.yaw << "\n"; 
+
+            pcl::PointCloud<PointType>::Ptr tf_cloud;
+            tf_cloud = transformPointCloud(laserCloudSurfLast,  &temp_pose);
+            publishCloud(&debug_transformed_cloud, tf_cloud, timeLaserInfoStamp, odometryFrame);
+
+            std_msgs::Float64 temp_msg;
+            temp_msg.data = cloudInfo.initialGuessYaw;
+            pubRawYaw.publish(temp_msg);
+
             return;
         }
     }
@@ -661,7 +688,7 @@ void mapOptimization::extractNearby()
         else
             break;
     }
-
+    
     extractCloud(surroundingKeyPosesDS);
 }
 
@@ -700,6 +727,17 @@ void mapOptimization::extractCloud(pcl::PointCloud<PointType>::Ptr cloudToExtrac
     downSizeFilterSurf.setInputCloud(laserCloudSurfFromMap);
     downSizeFilterSurf.filter(*laserCloudSurfFromMapDS);
     laserCloudSurfFromMapDSNum = laserCloudSurfFromMapDS->size();
+
+    if(cloudKeyPoses6D->size() > 17)
+    {
+        publishCloud(&map_extracted_surf, laserCloudCornerFromMap, timeLaserInfoStamp, odometryFrame);
+        publishCloud(&map_extracted_cor, laserCloudSurfFromMap, timeLaserInfoStamp, odometryFrame);
+        string temp;
+        // cin >> temp;
+
+        if(temp == "end")
+            std::terminate();
+    }
 
     // clear map cache if too large
     if (laserCloudMapContainer.size() > 1000)
@@ -1059,7 +1097,7 @@ void mapOptimization::scan2MapOptimization()
         kdtreeCornerFromMap->setInputCloud(laserCloudCornerFromMapDS);
         kdtreeSurfFromMap->setInputCloud(laserCloudSurfFromMapDS);
 
-        for (int iterCount = 0; iterCount < 30; iterCount++)
+        for (int iterCount = 0; iterCount < LMOMaxIterations; iterCount++)
         {
             laserCloudOri->clear();
             coeffSel->clear();
@@ -1301,9 +1339,12 @@ void mapOptimization::saveKeyFramesAndFactor()
     // cout << "****************************************************" << endl;
     // isamCurrentEstimate.print("Current estimate: ");
 
-    thisPose3D.x = latestEstimate.translation().x();
-    thisPose3D.y = latestEstimate.translation().y();
-    thisPose3D.z = latestEstimate.translation().z();
+    // thisPose3D.x = latestEstimate.translation().x();
+    // thisPose3D.y = latestEstimate.translation().y();
+    // thisPose3D.z = latestEstimate.translation().z();
+    thisPose3D.x = transformTobeMapped[3];
+    thisPose3D.y = transformTobeMapped[4];
+    thisPose3D.z = transformTobeMapped[5];
     thisPose3D.intensity = cloudKeyPoses3D->size(); // this can be used as index
     cloudKeyPoses3D->push_back(thisPose3D);
 
@@ -1311,9 +1352,12 @@ void mapOptimization::saveKeyFramesAndFactor()
     thisPose6D.y = thisPose3D.y;
     thisPose6D.z = thisPose3D.z;
     thisPose6D.intensity = thisPose3D.intensity ; // this can be used as index
-    thisPose6D.roll  = latestEstimate.rotation().roll();
-    thisPose6D.pitch = latestEstimate.rotation().pitch();
-    thisPose6D.yaw   = latestEstimate.rotation().yaw();
+    // thisPose6D.roll  = latestEstimate.rotation().roll();
+    // thisPose6D.pitch = latestEstimate.rotation().pitch();
+    // thisPose6D.yaw   = latestEstimate.rotation().yaw();
+    thisPose6D.roll  = transformTobeMapped[0];
+    thisPose6D.pitch = transformTobeMapped[1];
+    thisPose6D.yaw   = transformTobeMapped[2];
     thisPose6D.time = timeLaserInfoCur;
     cloudKeyPoses6D->push_back(thisPose6D);
 
@@ -1323,12 +1367,12 @@ void mapOptimization::saveKeyFramesAndFactor()
     poseCovariance = isam->marginalCovariance(isamCurrentEstimate.size()-1);
 
     // save updated transform
-    transformTobeMapped[0] = latestEstimate.rotation().roll();
-    transformTobeMapped[1] = latestEstimate.rotation().pitch();
-    transformTobeMapped[2] = latestEstimate.rotation().yaw();
-    transformTobeMapped[3] = latestEstimate.translation().x();
-    transformTobeMapped[4] = latestEstimate.translation().y();
-    transformTobeMapped[5] = latestEstimate.translation().z();
+    // transformTobeMapped[0] = latestEstimate.rotation().roll();
+    // transformTobeMapped[1] = latestEstimate.rotation().pitch();
+    // transformTobeMapped[2] = latestEstimate.rotation().yaw();
+    // transformTobeMapped[3] = latestEstimate.translation().x();
+    // transformTobeMapped[4] = latestEstimate.translation().y();
+    // transformTobeMapped[5] = latestEstimate.translation().z();
 
     // save all the received edge and surf points
     pcl::PointCloud<PointType>::Ptr thisCornerKeyFrame(new pcl::PointCloud<PointType>());
