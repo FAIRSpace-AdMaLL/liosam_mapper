@@ -114,6 +114,7 @@ bool ImageProjection::cachePointCloud(const sensor_msgs::PointCloud2ConstPtr& la
     // convert cloud
     currentCloudMsg = cloudQueue.front();
     cloudQueue.pop_front();
+    cloudInfo.cloud_raw = *laserCloudMsg;
     pcl::fromROSMsg(currentCloudMsg, *laserCloudIn);
 
     // get timestamp

@@ -141,6 +141,12 @@ int main(int argc, char** argv)
     
     read_bag.close();
 
+    // create directory and remove old files;
+    int unused = system((std::string("exec rm -r ") + MO.savePCDDirectory).c_str());
+    unused = system((std::string("mkdir -p ") + MO.savePCDDirectory).c_str());
+    // Save each lidar keyframe to a pcd file.
+    MO.saveFrames2PCD();
+
     rosbag::Bag write_bag;
     write_bag.open(MO.writeBag, rosbag::bagmode::Write);
 

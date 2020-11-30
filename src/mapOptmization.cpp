@@ -605,25 +605,25 @@ void mapOptimization::updateInitialGuess()
 
             lastImuTransformation = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit); // save imu before return;
 
-            PointTypePose temp_pose;
-            temp_pose.x = transformTobeMapped[3];
-            temp_pose.y = transformTobeMapped[4];
-            temp_pose.z = transformTobeMapped[5];
-            temp_pose.roll  = transformTobeMapped[0];
-            temp_pose.pitch = transformTobeMapped[1];
-            temp_pose.yaw   = transformTobeMapped[2];
+            // PointTypePose temp_pose;
+            // temp_pose.x = transformTobeMapped[3];
+            // temp_pose.y = transformTobeMapped[4];
+            // temp_pose.z = transformTobeMapped[5];
+            // temp_pose.roll  = transformTobeMapped[0];
+            // temp_pose.pitch = transformTobeMapped[1];
+            // temp_pose.yaw   = transformTobeMapped[2];
 
-            cout << "cloud key poses size: init="
-                << cloudInfo.initialGuessYaw << " tf="
-                << temp_pose.yaw << "\n"; 
+            // cout << "cloud key poses size: init="
+            //     << cloudInfo.initialGuessYaw << " tf="
+            //     << temp_pose.yaw << "\n"; 
 
-            pcl::PointCloud<PointType>::Ptr tf_cloud;
-            tf_cloud = transformPointCloud(laserCloudSurfLast,  &temp_pose);
-            publishCloud(&debug_transformed_cloud, tf_cloud, timeLaserInfoStamp, odometryFrame);
+            // pcl::PointCloud<PointType>::Ptr tf_cloud;
+            // tf_cloud = transformPointCloud(laserCloudSurfLast,  &temp_pose);
+            // publishCloud(&debug_transformed_cloud, tf_cloud, timeLaserInfoStamp, odometryFrame);
 
-            std_msgs::Float64 temp_msg;
-            temp_msg.data = cloudInfo.initialGuessYaw;
-            pubRawYaw.publish(temp_msg);
+            // std_msgs::Float64 temp_msg;
+            // temp_msg.data = cloudInfo.initialGuessYaw;
+            // pubRawYaw.publish(temp_msg);
 
             return;
         }
@@ -728,16 +728,16 @@ void mapOptimization::extractCloud(pcl::PointCloud<PointType>::Ptr cloudToExtrac
     downSizeFilterSurf.filter(*laserCloudSurfFromMapDS);
     laserCloudSurfFromMapDSNum = laserCloudSurfFromMapDS->size();
 
-    if(cloudKeyPoses6D->size() > 17)
-    {
-        publishCloud(&map_extracted_surf, laserCloudCornerFromMap, timeLaserInfoStamp, odometryFrame);
-        publishCloud(&map_extracted_cor, laserCloudSurfFromMap, timeLaserInfoStamp, odometryFrame);
-        string temp;
-        // cin >> temp;
+    // if(cloudKeyPoses6D->size() > 17)
+    // {
+    //     publishCloud(&map_extracted_surf, laserCloudCornerFromMap, timeLaserInfoStamp, odometryFrame);
+    //     publishCloud(&map_extracted_cor, laserCloudSurfFromMap, timeLaserInfoStamp, odometryFrame);
+    //     string temp;
+    //     // cin >> temp;
 
-        if(temp == "end")
-            std::terminate();
-    }
+    //     if(temp == "end")
+    //         std::terminate();
+    // }
 
     // clear map cache if too large
     if (laserCloudMapContainer.size() > 1000)
@@ -1339,12 +1339,9 @@ void mapOptimization::saveKeyFramesAndFactor()
     // cout << "****************************************************" << endl;
     // isamCurrentEstimate.print("Current estimate: ");
 
-    // thisPose3D.x = latestEstimate.translation().x();
-    // thisPose3D.y = latestEstimate.translation().y();
-    // thisPose3D.z = latestEstimate.translation().z();
-    thisPose3D.x = transformTobeMapped[3];
-    thisPose3D.y = transformTobeMapped[4];
-    thisPose3D.z = transformTobeMapped[5];
+    thisPose3D.x = latestEstimate.translation().x();
+    thisPose3D.y = latestEstimate.translation().y();
+    thisPose3D.z = latestEstimate.translation().z();
     thisPose3D.intensity = cloudKeyPoses3D->size(); // this can be used as index
     cloudKeyPoses3D->push_back(thisPose3D);
 
@@ -1352,12 +1349,9 @@ void mapOptimization::saveKeyFramesAndFactor()
     thisPose6D.y = thisPose3D.y;
     thisPose6D.z = thisPose3D.z;
     thisPose6D.intensity = thisPose3D.intensity ; // this can be used as index
-    // thisPose6D.roll  = latestEstimate.rotation().roll();
-    // thisPose6D.pitch = latestEstimate.rotation().pitch();
-    // thisPose6D.yaw   = latestEstimate.rotation().yaw();
-    thisPose6D.roll  = transformTobeMapped[0];
-    thisPose6D.pitch = transformTobeMapped[1];
-    thisPose6D.yaw   = transformTobeMapped[2];
+    thisPose6D.roll  = latestEstimate.rotation().roll();
+    thisPose6D.pitch = latestEstimate.rotation().pitch();
+    thisPose6D.yaw   = latestEstimate.rotation().yaw();
     thisPose6D.time = timeLaserInfoCur;
     cloudKeyPoses6D->push_back(thisPose6D);
 
@@ -1367,12 +1361,12 @@ void mapOptimization::saveKeyFramesAndFactor()
     poseCovariance = isam->marginalCovariance(isamCurrentEstimate.size()-1);
 
     // save updated transform
-    // transformTobeMapped[0] = latestEstimate.rotation().roll();
-    // transformTobeMapped[1] = latestEstimate.rotation().pitch();
-    // transformTobeMapped[2] = latestEstimate.rotation().yaw();
-    // transformTobeMapped[3] = latestEstimate.translation().x();
-    // transformTobeMapped[4] = latestEstimate.translation().y();
-    // transformTobeMapped[5] = latestEstimate.translation().z();
+    transformTobeMapped[0] = latestEstimate.rotation().roll();
+    transformTobeMapped[1] = latestEstimate.rotation().pitch();
+    transformTobeMapped[2] = latestEstimate.rotation().yaw();
+    transformTobeMapped[3] = latestEstimate.translation().x();
+    transformTobeMapped[4] = latestEstimate.translation().y();
+    transformTobeMapped[5] = latestEstimate.translation().z();
 
     // save all the received edge and surf points
     pcl::PointCloud<PointType>::Ptr thisCornerKeyFrame(new pcl::PointCloud<PointType>());
@@ -1386,6 +1380,9 @@ void mapOptimization::saveKeyFramesAndFactor()
 
     // save path for visualization
     updatePath(thisPose6D);
+
+    // Store raw lidar data
+    raw_lidar_data.push_back(cloudInfo.cloud_raw);
 }
 
 void mapOptimization::correctPoses()
@@ -1546,5 +1543,26 @@ void mapOptimization::publishFrames()
         globalPath.header.frame_id = odometryFrame;
         pubPath.publish(globalPath);
         // 
+    }
+}
+
+void mapOptimization::saveFrames2PCD()
+{
+    cout << "Saving lidar frames to pcd files ..." << endl;
+    
+    assert(raw_lidar_data.size() == globalPath.poses.size());
+
+    pcl::PointCloud<PointType>::Ptr cloudOut(new pcl::PointCloud<PointType>());;
+    ros::Time timestamp;
+    sensor_msgs::PointCloud2 cur_raw_cloud_msg;
+
+    for (int i = 0; i < globalPath.poses.size(); i++) {
+        timestamp = globalPath.poses[i].header.stamp;
+
+        pcl::fromROSMsg(raw_lidar_data[i], *cloudOut);
+
+        string file_name = to_string(timestamp.toSec()) + ".pcd";
+        pcl::io::savePCDFileASCII(savePCDDirectory + file_name, *cloudOut);
+        cout << savePCDDirectory + file_name << " saved.\n";
     }
 }
