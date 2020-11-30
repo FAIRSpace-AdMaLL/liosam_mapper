@@ -14,9 +14,9 @@
     <!--- Run Navsat -->
     <include file="$(find lio_sam)/launch/include/module_navsat.launch"/>
 
-    <include file="$(find lio_sam)/launch/plot.launch"/>
+    <!-- <include file="$(find lio_sam)/launch/plot.launch"/>
 
-    <node pkg="$(arg project)" type="quat_to_euler.py" name="quat_to_euler" output="screen"/>
+    <node pkg="$(arg project)" type="quat_to_euler.py" name="quat_to_euler" output="screen"/> -->
 
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch"/>
