@@ -6,9 +6,10 @@ lio_sam:
   odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                     # GPS odometry topic from navsat, see module_navsat.launch file
 
-  readBag: "/media/marwan/external_drive/longshaw_data/toplogical_mapping_data/longshaw_short_road.bag"
-  writeBag: "/home/marwan/topological_maps/longshaw_short_path/full_pointcloud_and_trajectory.bag"
-  savePCDDirectory: "/home/marwan/topological_maps/longshaw_short_path/local_frame_pcd/"
+  
+  readBag: "/media/marwan/external_drive/longshaw_data/toplogical_mapping_data/longshaw_repeat_long_2020-11-26-14-21-54.bag"
+  writeBag: "/home/marwan/topological_maps/longshaw_long_path_going/full_pointcloud_and_trajectory.bag"
+  savePCDDirectory: "/home/marwan/topological_maps/longshaw_long_path_going/global_frame_pcd/"
   LMOMaxIterations: 100                          # 60 --> works, 30 --> fails
   # loopRate: 70.0
 
@@ -79,7 +80,7 @@ lio_sam:
   mappingProcessInterval: 0.015                  # seconds, regulate mapping frequency. default 0.15
 
   # Surrounding map
-  surroundingkeyframeAddingDistThreshold: 1.0   # meters, regulate keyframe adding threshold
+  surroundingkeyframeAddingDistThreshold: 0.2  # meters, regulate keyframe adding threshold
   surroundingkeyframeAddingAngleThreshold: 0.1 # radians, regulate keyframe adding threshold
   surroundingKeyframeDensity: 2.0               # meters, downsample surrounding keyframe poses   
   surroundingKeyframeSearchRadius: 50.0         # meters, within n meters scan-to-map optimization (when loop closure disabled)
