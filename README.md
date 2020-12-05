@@ -37,6 +37,8 @@
 
   - [**TODO**](#todo)
 
+  - [**Related Package**](#related-package)
+
   - [**Acknowledgement**](#acknowledgement)
 
 ## System architecture
@@ -166,16 +168,9 @@ rosbag play your-bag.bag -r 3
     - Hardware:
       - Use an external IMU. LIO-SAM does not work with the internal 6-axis IMU of Ouster lidar. You need to attach a 9-axis IMU to the lidar and perform data-gathering.
       - Configure the driver. Change "timestamp_mode" in your Ouster launch file to "TIME_FROM_PTP_1588" so you can have ROS format timestamp for the point clouds.
-    - Software:
-      - Change "timeField" in "params.yaml" to "t". "t" is the point timestamp in a scan for Ouster lidar.
+    - Config:
+      - Change "sensor" in "params.yaml" to "ouster".
       - Change "N_SCAN" and "Horizon_SCAN" in "params.yaml" according to your lidar, i.e., N_SCAN=128, Horizon_SCAN=1024.
-      - Comment the point definition for Velodyne on top of "imageProjection.cpp".
-      - Uncomment the point definition for Ouster on top of "imageProjection.cpp".
-      - Comment line "timeScanEnd = timeScanCur + laserCloudIn->points.back().time" in "imageProjection.cpp".
-      - Uncomment line "timeScanEnd = timeScanCur + (float)laserCloudIn->points.back().t / 1000000000.0" in "imageProjection.cpp".
-      - Comment line "deskewPoint(&thisPoint, laserCloudIn->points[i].time)" in "imageProjection.cpp".
-      - Uncomment line "deskewPoint(&thisPoint, (float)laserCloudIn->points[i].t / 1000000000.0" in "imageProjection.cpp".
-      - Run "catkin_make" to re-compile the package.
     - Gen 1 and Gen 2 Ouster:
       It seems that the point coordinate definition might be different in different generations. Please refer to [Issue #94](https://github.com/TixiaoShan/LIO-SAM/issues/94) for debugging.
 
@@ -200,6 +195,7 @@ Thank you for citing [LIO-SAM (IROS-2020)](./config/doc/paper.pdf) if you use an
   title={LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping},
   author={Shan, Tixiao and Englot, Brendan and Meyers, Drew and Wang, Wei and Ratti, Carlo and Rus Daniela},
   booktitle={IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  pages={5135-5142},
   year={2020},
   organization={IEEE}
 }
@@ -220,6 +216,11 @@ Part of the code is adapted from [LeGO-LOAM](https://github.com/RobustFieldAuton
 ## TODO
 
   - [ ] [Bug within imuPreintegration](https://github.com/TixiaoShan/LIO-SAM/issues/104)
+
+## Related Package
+
+  - [LIO-SAM with ROS2](https://github.com/CAKGOD/lio_sam_ros2)
+  - [LIO-SAM with Scan Context](https://github.com/gisbi-kim/SC-LIO-SAM)
 
 ## Acknowledgement
 
