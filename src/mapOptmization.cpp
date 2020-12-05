@@ -1555,13 +1555,15 @@ void mapOptimization::saveFrames2PCD()
     pcl::PointCloud<PointType>::Ptr cloudOut(new pcl::PointCloud<PointType>());;
     ros::Time timestamp;
     sensor_msgs::PointCloud2 cur_raw_cloud_msg;
+    char file_name_buffer[11];  // xxxxxx.pcd
 
     for (int i = 0; i < globalPath.poses.size(); i++) {
         timestamp = globalPath.poses[i].header.stamp;
 
         pcl::fromROSMsg(raw_lidar_data[i], *cloudOut);
 
-        string file_name = to_string(timestamp.toSec()) + ".pcd";
+        sprintf(file_name_buffer, "%06d.pcd", i);
+        string file_name(file_name_buffer);
         pcl::io::savePCDFileASCII(savePCDDirectory + file_name, *cloudOut);
         cout << savePCDDirectory + file_name << " saved.\n";
     }
