@@ -289,7 +289,7 @@ void mapOptimization::publishGlobalMap()
     downSizeFilterGlobalMapKeyFrames.setLeafSize(globalMapVisualizationLeafSize, globalMapVisualizationLeafSize, globalMapVisualizationLeafSize); // for global map visualization
     downSizeFilterGlobalMapKeyFrames.setInputCloud(globalMapKeyFrames);
     downSizeFilterGlobalMapKeyFrames.filter(*globalMapKeyFramesDS);
-    globalMapToSave = publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame);
+    globalMapToSave = publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame); 
     ROS_ERROR_STREAM("LOOL " << globalMapToSave.header.frame_id);
 }
 
@@ -1382,7 +1382,8 @@ void mapOptimization::saveKeyFramesAndFactor()
     updatePath(thisPose6D);
 
     // Store raw lidar data
-    raw_lidar_data.push_back(cloudInfo.cloud_raw);
+    rawCloud.push_back(cloudInfo.cloud_raw);
+    deskewedCloud.push_back(cloudInfo.cloud_deskewed);
 }
 
 void mapOptimization::correctPoses()
@@ -1515,7 +1516,7 @@ void mapOptimization::publishFrames()
     if (cloudKeyPoses3D->points.empty())
         return;
     // publish key poses
-    publishCloud(&pubKeyPoses, cloudKeyPoses3D, timeLaserInfoStamp, odometryFrame);
+    path3DToSave = publishCloud(&pubKeyPoses, cloudKeyPoses3D, timeLaserInfoStamp, odometryFrame);
     // Publish surrounding key frames
     publishCloud(&pubRecentKeyFrames, laserCloudSurfFromMapDS, timeLaserInfoStamp, odometryFrame);
     // publish registered key frame
@@ -1550,21 +1551,48 @@ void mapOptimization::saveFrames2PCD()
 {
     cout << "Saving lidar frames to pcd files ..." << endl;
     
-    assert(raw_lidar_data.size() == globalPath.poses.size());
+    assert(rawCloud.size() == globalPath.poses.size());
+    assert(deskewedCloud.size() == globalPath.poses.size());
+    assert(cornerCloudKeyFrames.size() == globalPath.poses.size());
 
     pcl::PointCloud<PointType>::Ptr cloudOut(new pcl::PointCloud<PointType>());;
-    ros::Time timestamp;
+    PointTypePose thisPose6D;
+    // ros::Time timestamp;
     sensor_msgs::PointCloud2 cur_raw_cloud_msg;
     char file_name_buffer[11];  // xxxxxx.pcd
 
-    for (int i = 0; i < globalPath.poses.size(); i++) {
-        timestamp = globalPath.poses[i].header.stamp;
+    int unused;
+    unused = system(std::string("mkdir " + savePCDDirectory + "raw_cloud_lidar_frame/").c_str());
+    unused = system(std::string("mkdir " + savePCDDirectory + "deskewed_cloud_lidar_frame/").c_str());
+    unused = system(std::string("mkdir " + savePCDDirectory + "registered_cloud_local_map_frame/").c_str());
+    unused = system(std::string("mkdir " + savePCDDirectory + "registered_feature_cloud_local_map_frame/").c_str());
 
-        pcl::fromROSMsg(raw_lidar_data[i], *cloudOut);
+    for (int i = 0; i < globalPath.poses.size(); i++) {
+        // timestamp = globalPath.poses[i].header.stamp;
 
         sprintf(file_name_buffer, "%06d.pcd", i);
         string file_name(file_name_buffer);
-        pcl::io::savePCDFileASCII(savePCDDirectory + file_name, *cloudOut);
-        cout << savePCDDirectory + file_name << " saved.\n";
+
+        // Raw scans in the lidar frame.
+        pcl::fromROSMsg(rawCloud[i], *cloudOut);
+        pcl::io::savePCDFileASCII(savePCDDirectory + "raw_cloud_lidar_frame/" + file_name, *cloudOut);
+
+        // De-skewed scans in the lidar frame. These are they same scans that make up registered_cloud_map_frame.
+        pcl::fromROSMsg(deskewedCloud[i], *cloudOut);
+        pcl::io::savePCDFileASCII(savePCDDirectory + "deskewed_cloud_lidar_frame/" + file_name, *cloudOut);
+        
+        thisPose6D = cloudKeyPoses6D->points[i];
+
+        // De-skewed scans in the map frame, thus creating the full high res map when concatenated. 
+        *cloudOut = *transformPointCloud(cloudOut, &thisPose6D);
+        pcl::io::savePCDFileASCII(savePCDDirectory + "registered_cloud_local_map_frame/" + file_name, *cloudOut);
+
+        // Feature clouds in the map frame, thus creating a map based on feature when concatenated.
+        cloudOut->clear();
+        *cloudOut += *transformPointCloud(cornerCloudKeyFrames[i], &thisPose6D);
+        *cloudOut += *transformPointCloud(surfCloudKeyFrames[i], &thisPose6D);
+        pcl::io::savePCDFileASCII(savePCDDirectory + "registered_feature_cloud_local_map_frame/" + file_name, *cloudOut);
+        
+        cout << file_name << " saved.\n";
     }
 }

@@ -153,9 +153,10 @@ int main(int argc, char** argv)
     ROS_INFO("Saving global map and path to %s", MO.writeBag.c_str());
 
     write_bag.write("/lio_sam/mapping/map_global", ros::Time::now(), MO.globalMapToSave);
+    write_bag.write("/lio_sam/mapping/path_cloud", ros::Time::now(), MO.path3DToSave);
     write_bag.write("/lio_sam/mapping/path", ros::Time::now(), MO.globalPath);
     
-    ROS_INFO("Saved!");
+    ROS_INFO("Rosbag saved!");
 
     write_bag.close();
 

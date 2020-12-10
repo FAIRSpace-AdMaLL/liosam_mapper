@@ -105,7 +105,9 @@ public:
     std::vector<PointType> laserCloudOriSurfVec; // surf point holder for parallel computation
     std::vector<PointType> coeffSelSurfVec;
     std::vector<bool> laserCloudOriSurfFlag;
-    std::vector<sensor_msgs::PointCloud2> raw_lidar_data;
+    std::vector<sensor_msgs::PointCloud2> rawCloud;
+    std::vector<sensor_msgs::PointCloud2> deskewedCloud;
+    std::vector<sensor_msgs::PointCloud2> rawRegisteredCloud;
 
     map<int, pair<pcl::PointCloud<PointType>, pcl::PointCloud<PointType>>> laserCloudMapContainer;
     pcl::PointCloud<PointType>::Ptr laserCloudCornerFromMap;
@@ -149,6 +151,7 @@ public:
 
     nav_msgs::Path globalPath;
     sensor_msgs::PointCloud2 globalMapToSave;
+    sensor_msgs::PointCloud2 path3DToSave;
 
     Eigen::Affine3f transPointAssociateToMap;
     Eigen::Affine3f incrementalOdometryAffineFront;
