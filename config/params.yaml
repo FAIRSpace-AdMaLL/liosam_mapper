@@ -6,10 +6,23 @@ lio_sam:
   odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                     # GPS odometry topic from navsat, see module_navsat.launch file
 
-  
+
+  # readBag: "/home/marwan/fyp/bags/workshop_kidnap_zed.bag"
+  # writeBag: "/home/marwan/delme/delme.bag"
+  # savePCDDirectory: "/home/marwan/delme/"
+
+  # readBag: "/media/marwan/external_drive/longshaw_data/longshaw_1_sensors_only.bag"
+  # writeBag: "/home/marwan/topological_maps/longshaw_short_path_0/map_and_trajectory.bag"
+  # savePCDDirectory: "/home/marwan/topological_maps/longshaw_short_path_0/"
+
   readBag: "/media/marwan/external_drive/longshaw_data/toplogical_mapping_data/longshaw_repeat_long_2020-11-26-14-21-54.bag"
-  writeBag: "/home/marwan/topological_maps/longshaw_long_path_going/full_pointcloud_and_trajectory.bag"
-  savePCDDirectory: "/home/marwan/topological_maps/longshaw_long_path_going/global_frame_pcd/"
+  writeBag: "/home/marwan/topological_maps/longshaw_long_path_0/map_and_trajectory.bag"
+  savePCDDirectory: "/home/marwan/topological_maps/longshaw_long_path_0/"
+
+
+  # readBag: "/media/marwan/external_drive/courtyard/outdoor1_2020-09-11-16-13-13.bag"
+  # writeBag: "/home/marwan/delme/full_pointcloud_and_trajectory.bag"
+  # savePCDDirectory: "/home/marwan/delme/local_frame_pcd/"
   LMOMaxIterations: 100                          # 60 --> works, 30 --> fails
   # loopRate: 70.0
 
@@ -87,7 +100,7 @@ lio_sam:
 
   # Loop closure
   loopClosureEnableFlag: true
-  loopClosureFrequency: 5.0                     # Hz, regulate loop closure constraint add frequency
+  loopClosureFrequency: 1.0                     # Hz, regulate loop closure constraint add frequency
   surroundingKeyframeSize: 50                   # submap size (when loop closure enabled)
   historyKeyframeSearchRadius: 15.0             # meters, key frame that is within n meters from current pose will be considerd for loop closure
   historyKeyframeSearchTimeDiff: 10.0           # seconds, key frame that is n seconds older will be considered for loop closure
