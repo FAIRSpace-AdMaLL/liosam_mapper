@@ -154,6 +154,12 @@ public:
     std::string readBag;
     std::string writeBag;
 
+    bool saveRawPCD;
+    bool saveDeskewedPCD;
+    bool saveRegisteredCloudPCD;
+    bool saveRegisteredFeaturesPCD;
+    bool saveToRosbag;
+
     ParamServer()
     {
         nh.param<std::string>("/robot_id", robot_id, "roboat");
@@ -177,7 +183,11 @@ public:
         nh.param<float>("lio_sam/gpsCovThreshold", gpsCovThreshold, 2.0);
         nh.param<float>("lio_sam/poseCovThreshold", poseCovThreshold, 25.0);
 
-        nh.param<bool>("lio_sam/savePCD", savePCD, false);
+        nh.param<bool>("lio_sam/saveRawPCD", saveRawPCD, false);
+        nh.param<bool>("lio_sam/saveDeskewedPCD", saveDeskewedPCD, false);
+        nh.param<bool>("lio_sam/saveRegisteredCloudPCD", saveRegisteredCloudPCD, false);
+        nh.param<bool>("lio_sam/saveRegisteredFeaturesPCD", saveRegisteredFeaturesPCD, false);
+        nh.param<bool>("lio_sam/saveToRosbag", saveToRosbag, false);
         nh.param<std::string>("lio_sam/savePCDDirectory", savePCDDirectory, "/Downloads/LOAM/");
 
         nh.param<int>("lio_sam/N_SCAN", N_SCAN, 16);

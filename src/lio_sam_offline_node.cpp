@@ -147,18 +147,21 @@ int main(int argc, char** argv)
     // Save each lidar keyframe to a pcd file.
     MO.saveFrames2PCD();
 
-    rosbag::Bag write_bag;
-    write_bag.open(MO.writeBag, rosbag::bagmode::Write);
+    if(MO.saveToRosbag)
+    {
+        rosbag::Bag write_bag;
+        write_bag.open(MO.writeBag, rosbag::bagmode::Write);
 
-    ROS_INFO("Saving global map and path to %s", MO.writeBag.c_str());
+        ROS_INFO("Saving global map and path to %s", MO.writeBag.c_str());
 
-    write_bag.write("/lio_sam/mapping/map_global", ros::Time::now(), MO.globalMapToSave);
-    write_bag.write("/lio_sam/mapping/path_cloud", ros::Time::now(), MO.path3DToSave);
-    write_bag.write("/lio_sam/mapping/path", ros::Time::now(), MO.globalPath);
-    
-    ROS_INFO("Rosbag saved!");
+        write_bag.write("/lio_sam/mapping/map_global", ros::Time::now(), MO.globalMapToSave);
+        write_bag.write("/lio_sam/mapping/path_cloud", ros::Time::now(), MO.path3DToSave);
+        write_bag.write("/lio_sam/mapping/path", ros::Time::now(), MO.globalPath);
+        
+        ROS_INFO("Rosbag saved!");
 
-    write_bag.close();
+        write_bag.close();
+    }
 
     loopthread.detach();
     visualizeMapThread.detach();

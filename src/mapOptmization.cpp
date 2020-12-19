@@ -632,7 +632,7 @@ void mapOptimization::updateInitialGuess()
     // use imu incremental estimation for pose guess (only rotation)
     if (cloudInfo.imuAvailable == true)
     {
-        Eigen::Affine3f transBack = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit);
+        Eigen::Agit ne3f transBack = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit);
         Eigen::Affine3f transIncre = lastImuTransformation.inverse() * transBack;
 
         Eigen::Affine3f transTobe = trans2Affine3f(transformTobeMapped);
@@ -1567,31 +1567,49 @@ void mapOptimization::saveFrames2PCD()
     unused = system(std::string("mkdir " + savePCDDirectory + "registered_cloud_local_map_frame/").c_str());
     unused = system(std::string("mkdir " + savePCDDirectory + "registered_feature_cloud_local_map_frame/").c_str());
 
+    if(!(saveRawPCD || saveDeskewedPCD || saveRegisteredCloudPCD || saveRegisteredFeaturesPCD))
+    {
+        ROS_INFO("No PCDs to save.");
+        return;
+    }
+
     for (int i = 0; i < globalPath.poses.size(); i++) {
         // timestamp = globalPath.poses[i].header.stamp;
 
         sprintf(file_name_buffer, "%06d.pcd", i);
         string file_name(file_name_buffer);
 
-        // Raw scans in the lidar frame.
-        pcl::fromROSMsg(rawCloud[i], *cloudOut);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "raw_cloud_lidar_frame/" + file_name, *cloudOut);
+        if(saveRawPCD)
+        {
+            // Raw scans in the lidar frame.
+            pcl::fromROSMsg(rawCloud[i], *cloudOut);
+            pcl::io::savePCDFileASCII(savePCDDirectory + "raw_cloud_lidar_frame/" + file_name, *cloudOut);
+        }
 
-        // De-skewed scans in the lidar frame. These are they same scans that make up registered_cloud_map_frame.
-        pcl::fromROSMsg(deskewedCloud[i], *cloudOut);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "deskewed_cloud_lidar_frame/" + file_name, *cloudOut);
+        if(saveDeskewedPCD)
+        {
+            // De-skewed scans in the lidar frame. These are they same scans that make up registered_cloud_map_frame.
+            pcl::fromROSMsg(deskewedCloud[i], *cloudOut);
+            pcl::io::savePCDFileASCII(savePCDDirectory + "deskewed_cloud_lidar_frame/" + file_name, *cloudOut);
+        }
         
         thisPose6D = cloudKeyPoses6D->points[i];
 
-        // De-skewed scans in the map frame, thus creating the full high res map when concatenated. 
-        *cloudOut = *transformPointCloud(cloudOut, &thisPose6D);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "registered_cloud_local_map_frame/" + file_name, *cloudOut);
+        if(saveRegisteredCloudPCD)
+        {
+            // De-skewed scans in the map frame, thus creating the full high res map when concatenated. 
+            *cloudOut = *transformPointCloud(cloudOut, &thisPose6D);
+            pcl::io::savePCDFileASCII(savePCDDirectory + "registered_cloud_local_map_frame/" + file_name, *cloudOut);
+        }
 
-        // Feature clouds in the map frame, thus creating a map based on feature when concatenated.
-        cloudOut->clear();
-        *cloudOut += *transformPointCloud(cornerCloudKeyFrames[i], &thisPose6D);
-        *cloudOut += *transformPointCloud(surfCloudKeyFrames[i], &thisPose6D);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "registered_feature_cloud_local_map_frame/" + file_name, *cloudOut);
+        if(saveRegisteredFeaturesPCD)
+        {
+            // Feature clouds in the map frame, thus creating a map based on feature when concatenated.
+            cloudOut->clear();
+            *cloudOut += *transformPointCloud(cornerCloudKeyFrames[i], &thisPose6D);
+            *cloudOut += *transformPointCloud(surfCloudKeyFrames[i], &thisPose6D);
+            pcl::io::savePCDFileASCII(savePCDDirectory + "registered_feature_cloud_local_map_frame/" + file_name, *cloudOut);
+        }
         
         cout << file_name << " saved.\n";
     }
