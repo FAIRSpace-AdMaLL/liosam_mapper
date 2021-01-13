@@ -632,7 +632,7 @@ void mapOptimization::updateInitialGuess()
     // use imu incremental estimation for pose guess (only rotation)
     if (cloudInfo.imuAvailable == true)
     {
-        Eigen::Agit ne3f transBack = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit);
+        Eigen::Affine3f transBack = pcl::getTransformation(0, 0, 0, cloudInfo.imuRollInit, cloudInfo.imuPitchInit, cloudInfo.imuYawInit);
         Eigen::Affine3f transIncre = lastImuTransformation.inverse() * transBack;
 
         Eigen::Affine3f transTobe = trans2Affine3f(transformTobeMapped);
