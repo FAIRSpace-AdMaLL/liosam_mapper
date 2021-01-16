@@ -15,10 +15,15 @@ lio_sam:
   # writeBag: "/home/marwan/topological_maps/longshaw_short_path_0/map_and_trajectory.bag"
   # savePCDDirectory: "/home/marwan/topological_maps/longshaw_short_path_0/"
 
-  readBag: "/media/marwan/external_drive/longshaw_data/toplogical_mapping_data/longshaw_repeat_long_2020-11-26-14-21-54.bag"
-  writeBag: "/home/marwan/topological_maps/longshaw_long_path_0/map_and_trajectory.bag"
-  savePCDDirectory: "/home/marwan/topological_maps/longshaw_long_path_0/"
+  readBag: "/home/marwan/fyp/bags/workshop_kidnap_zed.bag"
+  writeBag: "/home/marwan/topological_maps/l_shaped_path_0/map_and_trajectory.bag"
+  savePCDDirectory: "/home/marwan/topological_maps/l_shaped_path_0/"
 
+  saveRawPCD: true
+  saveDeskewedPCD: true
+  saveRegisteredCloudPCD: true
+  saveRegisteredFeaturesPCD: true
+  saveToRosbag: true
 
   # readBag: "/media/marwan/external_drive/courtyard/outdoor1_2020-09-11-16-13-13.bag"
   # writeBag: "/home/marwan/delme/full_pointcloud_and_trajectory.bag"
@@ -110,7 +115,7 @@ lio_sam:
   # Visualization
   globalMapVisualizationSearchRadius: 1000.0    # meters, global map visualization radius
   globalMapVisualizationPoseDensity: 10.0       # meters, global map visualization keyframe density
-  globalMapVisualizationLeafSize: 0.2           # meters, global map visualization cloud density
+  globalMapVisualizationLeafSize: 0.6           # meters, global map visualization cloud density
 
 
 
