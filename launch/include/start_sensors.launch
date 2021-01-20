@@ -3,21 +3,21 @@
     <arg name="project" default="lio_sam"/>
 
      <!-- Run Ouster lidar nodes -->
-    <node pkg="ouster_ros" name="os1_node" type="os1_node" output="screen" required="true">
+    <node pkg="ouster_ros" name="os_node" type="os_node" output="screen" required="true">
         <param name="~/timestamp_mode" type="string" value="TIME_FROM_PTP_1588"/>
         <param name="~/lidar_mode" type="string" value="512x10"/> <!--512x10-->
-        <param name="~/os1_hostname" value="os1-991935000714.local"/>
-        <param name="~/os1_udp_dest" value="10.5.5.1"/>
-        <param name="~/os1_lidar_port" value="0"/>
-        <param name="~/os1_imu_port" value="0"/>
+        <param name="~/sensor_hostname" value="os1-991935000714.local"/>
+        <param name="~/udp_dest" value="10.5.5.1"/>
+        <param name="~/lidar_port" value="0"/>
+        <param name="~/imu_port" value="0"/>
         <param name="~/replay" value="false"/>
         <param name="~/metadata" value=""/>
     </node>
 
-    <node pkg="ouster_ros" type="os1_cloud_node" name="os1_cloud_node" output="screen" required="true">
-        <remap from="~/os1_config" to="/os1_node/os1_config"/>
-        <remap from="~/lidar_packets" to="/os1_node/lidar_packets"/>
-        <remap from="~/imu_packets" to="/os1_node/imu_packets"/>
+    <node pkg="ouster_ros" type="os_cloud_node" name="os_cloud_node" output="screen" required="true">
+        <remap from="~/os_config" to="/os_node/os_config"/>
+        <remap from="~/lidar_packets" to="/os_node/lidar_packets"/>
+        <remap from="~/imu_packets" to="/os_node/imu_packets"/>
         <param name="~/tf_prefix" value=""/>
     </node>
 
