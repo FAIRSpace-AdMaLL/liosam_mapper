@@ -1,20 +1,20 @@
 lio_sam:
 
   # Topics
-  pointCloudTopic: "/os1_cloud_node/points"     # Point cloud data
+  pointCloudTopic: "/os_cloud_node/points"      # Point cloud data
   imuTopic: "/imu/data"                         # IMU data
   odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "odometry/gps"                      # GPS odometry topic from navsat, see module_navsat.launch file
+  gpsTopic: "odometry/gpsz"                      # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
-  lidarFrame: "os1_lidar"
+  lidarFrame: "os_sensor"
   baselinkFrame: "base_link"
   odometryFrame: "odom"
   mapFrame: "map"
 
   # GPS Settings
-  useImuHeadingInitialization: true           # if using GPS data, set to "true"
-  useGpsElevation: true                       # if GPS elevation is bad, set to "false"
+  useImuHeadingInitialization: false           # if using GPS data, set to "true"
+  useGpsElevation: false                       # if GPS elevation is bad, set to "false"
   gpsCovThreshold: 2.0                        # m^2, threshold for using GPS data
   poseCovThreshold: 25.0                      # m^2, threshold for using GPS data
   
@@ -31,15 +31,15 @@ lio_sam:
   lidarMaxRange: 1000.0                       # default: 1000.0, maximum lidar range to be used
 
   # IMU Settings
-  imuAccNoise: 3.9939570888238808e-03
-  imuGyrNoise: 1.5636343949698187e-03
-  imuAccBiasN: 6.4356659353532566e-05
-  imuGyrBiasN: 3.5640318696367613e-05
+  imuAccNoise: 1.1482278718560682e-02
+  imuGyrNoise: 2.5927133356058751e-03
+  imuAccBiasN: 1.5325901532314823e-04
+  imuGyrBiasN: 3.7396116736653444e-05
   imuGravity: 9.80511
   imuRPYWeight: 0.01
 
   # Extrinsics (lidar -> IMU)
-  extrinsicTrans: [0.0, 0.0, 0.0]
+  extrinsicTrans: [0.16589, 0.0, -0.29841]
   # extrinsicRot: [-1, 0, 0,
   #                 0, 1, 0,
   #                 0, 0, -1]
