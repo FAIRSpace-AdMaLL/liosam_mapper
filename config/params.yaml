@@ -31,11 +31,11 @@ lio_sam:
   lidarMaxRange: 1000.0                       # default: 1000.0, maximum lidar range to be used
 
   # IMU Settings
-  imuAccNoise: 1.1482278718560682e-02
-  imuGyrNoise: 2.5927133356058751e-03
-  imuAccBiasN: 1.5325901532314823e-04
-  imuGyrBiasN: 3.7396116736653444e-05
-  imuGravity: 9.80511
+  imuAccNoise: 1.2154843674317246e-02
+  imuGyrNoise: 2.5532119453813736e-03
+  imuAccBiasN: 3.1134284621039883e-04
+  imuGyrBiasN: 3.9069248285250210e-05
+  imuGravity: 9.80
   imuRPYWeight: 0.01
 
   # Extrinsics (lidar -> IMU)
@@ -89,8 +89,8 @@ lio_sam:
 
   # Visualization
   globalMapVisualizationSearchRadius: 1000.0    # meters, global map visualization radius
-  globalMapVisualizationPoseDensity: 10.0       # meters, global map visualization keyframe density
-  globalMapVisualizationLeafSize: 1.0           # meters, global map visualization cloud density
+  globalMapVisualizationPoseDensity: 1.0       # meters, global map visualization keyframe density
+  globalMapVisualizationLeafSize: 0.1           # meters, global map visualization cloud density
 
 
 
