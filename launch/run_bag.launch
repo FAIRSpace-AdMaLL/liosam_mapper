@@ -1,0 +1,21 @@
+<launch>
+    <arg name="project" default="lio_sam" />
+
+    <include file="$(find lio_sam)/launch/run_offline.launch" />
+
+    <node pkg="rosbag" type="play" name="player" output="screen" args="-r 0.75 /media/jaguar/external_drive/ICRA_2021/around_church_17_10/church_evening_testing_baseline_0_2020-10-17-18-09-20.bag" />
+
+    <node pkg="rosbag" type="record" name="recorder" output="screen" args="
+        /tf
+        /tf_static
+        /encoder_odom
+        /os1_cloud_node/points
+        /lio_sam/deskew/cloud_deskewed
+        /lio_sam/mapping/odometry
+        /lio_sam/mapping/map_local
+        /lio_sam/mapping/map_global
+        /lio_sam/mapping/cloud_registered
+        /lio_sam/mapping/trajectory 
+        -o /home/jaguar/around_church_lio_sam.bag" />
+
+</launch>
