@@ -3,7 +3,7 @@
 
     <include file="$(find lio_sam)/launch/run_offline.launch" />
 
-    <node pkg="rosbag" type="play" name="player" output="screen" args="-r 0.75 /media/jaguar/external_drive/ICRA_2021/around_church_17_10/church_evening_testing_baseline_0_2020-10-17-18-09-20.bag" />
+    <node pkg="rosbag" type="play" name="player" output="screen" args="-r 1 /media/marwan/external_drive/fyp/post_ouster_pkg_update/localization/localization_0_2021-02-13-16-06-39.bag" />
 
     <node pkg="rosbag" type="record" name="recorder" output="screen" args="
         /tf
@@ -16,6 +16,6 @@
         /lio_sam/mapping/map_global
         /lio_sam/mapping/cloud_registered
         /lio_sam/mapping/trajectory 
-        -o /home/jaguar/around_church_lio_sam.bag" />
+        -o /home/marwan/localization_0_courtyard.bag" />
 
 </launch>
