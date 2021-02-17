@@ -21,11 +21,11 @@
     </joint>
 
     <!-- OS1 lidar -->
-    <link name="os1_lidar"/>
-    <joint name="os1_lidar_joint" type="fixed">
-        <origin rpy="0 0 ${PI}" xyz="-0.01936 0 0.64805"/>
+    <link name="os_sensor"/>
+    <joint name="os_sensor_joint" type="fixed">
+        <origin rpy="0 0 0" xyz="-0.01936 0 0.64805"/>
         <parent link="base_link"/>
-        <child link="os1_lidar"/>
+        <child link="os_sensor"/>
     </joint>
 
     <!-- GPS -->
