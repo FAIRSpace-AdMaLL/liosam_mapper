@@ -6,18 +6,9 @@ lio_sam:
   odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                     # GPS odometry topic from navsat, see module_navsat.launch file
 
-
   readBag: "/media/marwan/external_drive/fyp/post_ouster_pkg_update/localization/localization_0_2021-02-13-16-06-39.bag"
   writeBag: "/home/marwan/ndt_localization/map_and_trajectory.bag"
   savePCDDirectory: "/home/marwan/ndt_localization/"
-
-  # readBag: "/media/marwan/external_drive/longshaw_data/longshaw_1_sensors_only.bag"
-  # writeBag: "/home/marwan/topological_maps/longshaw_short_path_0/map_and_trajectory.bag"
-  # savePCDDirectory: "/home/marwan/topological_maps/longshaw_short_path_0/"
-
-  # readBag: "/home/marwan/fyp/bags/workshop_kidnap_zed.bag"
-  # writeBag: "/home/marwan/topological_maps/l_shaped_path_0/map_and_trajectory.bag"
-  # savePCDDirectory: "/home/marwan/topological_maps/l_shaped_path_0/"
 
   saveRawPCD: true
   saveDeskewedPCD: true
@@ -25,9 +16,6 @@ lio_sam:
   saveRegisteredFeaturesPCD: true
   saveToRosbag: true
 
-  # readBag: "/media/marwan/external_drive/courtyard/outdoor1_2020-09-11-16-13-13.bag"
-  # writeBag: "/home/marwan/delme/full_pointcloud_and_trajectory.bag"
-  # savePCDDirectory: "/home/marwan/delme/local_frame_pcd/"
   LMOMaxIterations: 100                          # 60 --> works, 30 --> fails
   # loopRate: 70.0
 
