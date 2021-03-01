@@ -289,8 +289,8 @@ void mapOptimization::publishGlobalMap()
     downSizeFilterGlobalMapKeyFrames.setLeafSize(globalMapVisualizationLeafSize, globalMapVisualizationLeafSize, globalMapVisualizationLeafSize); // for global map visualization
     downSizeFilterGlobalMapKeyFrames.setInputCloud(globalMapKeyFrames);
     downSizeFilterGlobalMapKeyFrames.filter(*globalMapKeyFramesDS);
-    globalMapToSave = publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame); 
-    ROS_ERROR_STREAM("LOOL " << globalMapToSave.header.frame_id);
+    globalMapToSave = publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, mapFrame);
+    ROS_INFO("Publishing global map");
 }
 
 void mapOptimization::loopClosureThread()
@@ -1516,9 +1516,9 @@ void mapOptimization::publishFrames()
     if (cloudKeyPoses3D->points.empty())
         return;
     // publish key poses
-    path3DToSave = publishCloud(&pubKeyPoses, cloudKeyPoses3D, timeLaserInfoStamp, odometryFrame);
+    path3DToSave = publishCloud(&pubKeyPoses, cloudKeyPoses3D, timeLaserInfoStamp, mapFrame);
     // Publish surrounding key frames
-    publishCloud(&pubRecentKeyFrames, laserCloudSurfFromMapDS, timeLaserInfoStamp, odometryFrame);
+    publishCloud(&pubRecentKeyFrames, laserCloudSurfFromMapDS, timeLaserInfoStamp, mapFrame);
     // publish registered key frame
     if (pubRecentKeyFrame.getNumSubscribers() != 0)
     {
@@ -1526,7 +1526,7 @@ void mapOptimization::publishFrames()
         PointTypePose thisPose6D = trans2PointTypePose(transformTobeMapped);
         *cloudOut += *transformPointCloud(laserCloudCornerLastDS,  &thisPose6D);
         *cloudOut += *transformPointCloud(laserCloudSurfLastDS,    &thisPose6D);
-        publishCloud(&pubRecentKeyFrame, cloudOut, timeLaserInfoStamp, odometryFrame);
+        publishCloud(&pubRecentKeyFrame, cloudOut, timeLaserInfoStamp, mapFrame);
     }
     // publish registered high-res raw cloud
     if (pubCloudRegisteredRaw.getNumSubscribers() != 0)
@@ -1535,13 +1535,13 @@ void mapOptimization::publishFrames()
         pcl::fromROSMsg(cloudInfo.cloud_deskewed, *cloudOut);
         PointTypePose thisPose6D = trans2PointTypePose(transformTobeMapped);
         *cloudOut = *transformPointCloud(cloudOut,  &thisPose6D);
-        publishCloud(&pubCloudRegisteredRaw, cloudOut, timeLaserInfoStamp, odometryFrame);
+        publishCloud(&pubCloudRegisteredRaw, cloudOut, timeLaserInfoStamp, mapFrame);
     }
     // publish path
     if (pubPath.getNumSubscribers() != 0)
     {
         globalPath.header.stamp = timeLaserInfoStamp;
-        globalPath.header.frame_id = odometryFrame;
+        globalPath.header.frame_id = mapFrame;
         pubPath.publish(globalPath);
         // 
     }
