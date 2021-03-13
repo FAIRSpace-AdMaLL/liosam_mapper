@@ -1,20 +1,24 @@
 lio_sam:
 
   # Topics
-  pointCloudTopic: "/os_cloud_node/points"     # Point cloud data
+  pointCloudTopic: "/os_cloud_node/points"      # Point cloud data
   imuTopic: "/imu/data"                         # IMU data
-  odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
+  odomTopic: "odometry/imu"                     # IMU pre-integration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                     # GPS odometry topic from navsat, see module_navsat.launch file
 
-  readBag: "/media/marwan/external_drive/fyp/post_ouster_pkg_update/localization/localization_0_2021-02-13-16-06-39.bag"
-  writeBag: "/home/marwan/ndt_localization/map_and_trajectory.bag"
-  savePCDDirectory: "/home/marwan/ndt_localization/"
+  readBag: "/media/marwan/external_drive/IROS/wednesday/parking_lot_repeat_stroll_5_2021-03-03-18-33-32.bag"
+  
+  saveToRosbag: true
+  writeBag: "/home/marwan/fyp/lt_data/parking_lot/parking_lot_repeat_stroll_5_2021-03-03-18-33-32.bag"
 
   saveRawPCD: true
   saveDeskewedPCD: true
   saveRegisteredCloudPCD: true
   saveRegisteredFeaturesPCD: true
-  saveToRosbag: true
+  savePCDDirectory: "/home/marwan/fyp/lt_data/parking_lot/"
+  
+  saveTrajectoryCSV: true
+  saveTrajectoryDirectory: "/home/marwan/fyp/lt_data/parking_lot/trajectory.csv"
 
   LMOMaxIterations: 100                          # 60 --> works, 30 --> fails
   # loopRate: 70.0
@@ -32,7 +36,7 @@ lio_sam:
   poseCovThreshold: 25.0                      # m^2, threshold for using GPS data
   
   # Export settings
-  savePCD: false                              # https://github.com/TixiaoShan/LIO-SAM/issues/3
+  # savePCD: false                              # https://github.com/TixiaoShan/LIO-SAM/issues/3
   # savePCDDirectory: "/Downloads/LOAM/"        # in your home folder, starts and ends with "/". Warning: the code deletes "LOAM" folder then recreates it. See "mapOptimization" for implementation
 
   # Sensor Settings

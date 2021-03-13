@@ -250,4 +250,6 @@ public:
     void publishFrames();
 
     void saveFrames2PCD();
+
+    void save_trajectory_to_csv();
 };

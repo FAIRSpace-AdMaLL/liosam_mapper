@@ -153,12 +153,14 @@ public:
 
     std::string readBag;
     std::string writeBag;
+    std::string saveTrajectoryDirectory;
 
     bool saveRawPCD;
     bool saveDeskewedPCD;
     bool saveRegisteredCloudPCD;
     bool saveRegisteredFeaturesPCD;
     bool saveToRosbag;
+    bool saveTrajectoryCSV;
 
     ParamServer()
     {
@@ -189,6 +191,8 @@ public:
         nh.param<bool>("lio_sam/saveRegisteredFeaturesPCD", saveRegisteredFeaturesPCD, false);
         nh.param<bool>("lio_sam/saveToRosbag", saveToRosbag, false);
         nh.param<std::string>("lio_sam/savePCDDirectory", savePCDDirectory, "/Downloads/LOAM/");
+        nh.param<bool>("lio_sam/saveTrajectoryCSV", saveTrajectoryCSV, false);
+        nh.param<std::string>("lio_sam/saveTrajectoryDirectory", saveTrajectoryDirectory, "");
 
         nh.param<int>("lio_sam/N_SCAN", N_SCAN, 16);
         nh.param<int>("lio_sam/Horizon_SCAN", Horizon_SCAN, 1800);
