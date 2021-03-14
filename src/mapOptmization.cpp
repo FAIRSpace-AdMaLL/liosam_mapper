@@ -1561,11 +1561,20 @@ void mapOptimization::saveFrames2PCD()
     sensor_msgs::PointCloud2 cur_raw_cloud_msg;
     char file_name_buffer[11];  // xxxxxx.pcd
 
+    if(savePCDDirectory.back() != '/')
+        savePCDDirectory.push_back('/');
+    cout << savePCDDirectory << endl;
+    cout << std::string("mkdir -p " + savePCDDirectory + "raw_cloud_lidar_frame/") << endl;
+
     int unused;
-    unused = system(std::string("mkdir " + savePCDDirectory + "raw_cloud_lidar_frame/").c_str());
-    unused = system(std::string("mkdir " + savePCDDirectory + "deskewed_cloud_lidar_frame/").c_str());
-    unused = system(std::string("mkdir " + savePCDDirectory + "registered_cloud_local_map_frame/").c_str());
-    unused = system(std::string("mkdir " + savePCDDirectory + "registered_feature_cloud_local_map_frame/").c_str());
+    if(saveRawPCD)
+        unused = system(std::string("mkdir -p " + savePCDDirectory + "raw_cloud_lidar_frame/").c_str());
+    if(saveDeskewedPCD)
+        unused = system(std::string("mkdir -p " + savePCDDirectory + "deskewed_cloud_lidar_frame/").c_str());
+    if(saveRegisteredCloudPCD)
+        unused = system(std::string("mkdir -p " + savePCDDirectory + "registered_cloud_map_frame/").c_str());
+    if(saveRegisteredFeaturesPCD)
+        unused = system(std::string("mkdir -p " + savePCDDirectory + "registered_feature_cloud_map_frame/").c_str());
 
     if(!(saveRawPCD || saveDeskewedPCD || saveRegisteredCloudPCD || saveRegisteredFeaturesPCD))
     {
@@ -1599,7 +1608,7 @@ void mapOptimization::saveFrames2PCD()
         {
             // De-skewed scans in the map frame, thus creating the full high res map when concatenated. 
             *cloudOut = *transformPointCloud(cloudOut, &thisPose6D);
-            pcl::io::savePCDFileASCII(savePCDDirectory + "registered_cloud_local_map_frame/" + file_name, *cloudOut);
+            pcl::io::savePCDFileASCII(savePCDDirectory + "registered_cloud_map_frame/" + file_name, *cloudOut);
         }
 
         if(saveRegisteredFeaturesPCD)
@@ -1608,7 +1617,7 @@ void mapOptimization::saveFrames2PCD()
             cloudOut->clear();
             *cloudOut += *transformPointCloud(cornerCloudKeyFrames[i], &thisPose6D);
             *cloudOut += *transformPointCloud(surfCloudKeyFrames[i], &thisPose6D);
-            pcl::io::savePCDFileASCII(savePCDDirectory + "registered_feature_cloud_local_map_frame/" + file_name, *cloudOut);
+            pcl::io::savePCDFileASCII(savePCDDirectory + "registered_feature_cloud_map_frame/" + file_name, *cloudOut);
         }
         
         cout << file_name << " saved.\n";
