@@ -147,6 +147,9 @@ int main(int argc, char** argv)
     // Save each lidar keyframe to a pcd file.
     MO.saveFrames2PCD();
 
+    // save trajectory to csv
+    MO.save_trajectory_to_csv();
+
     if(MO.saveToRosbag)
     {
         rosbag::Bag write_bag;
