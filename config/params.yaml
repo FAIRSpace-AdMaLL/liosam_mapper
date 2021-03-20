@@ -25,6 +25,9 @@ lio_sam:
   saveRegisteredFeaturesPCD: true
   saveToRosbag: true
 
+  saveTrajectoryCSV: true
+  saveTrajectoryDirectory: "/home/marwan/fyp/lt_data/parking_lot/trajectory.csv"
+
   # readBag: "/media/marwan/external_drive/courtyard/outdoor1_2020-09-11-16-13-13.bag"
   # writeBag: "/home/marwan/delme/full_pointcloud_and_trajectory.bag"
   # savePCDDirectory: "/home/marwan/delme/local_frame_pcd/"

@@ -1614,3 +1614,32 @@ void mapOptimization::saveFrames2PCD()
         cout << file_name << " saved.\n";
     }
 }
+
+void mapOptimization::save_trajectory_to_csv()
+{
+    if (saveTrajectoryCSV)
+    {
+        ROS_INFO("Saving global trajectory to CSV...");
+
+        if(saveTrajectoryDirectory == "")
+        {
+            ROS_ERROR("saveTrajectoryDirectory parameter is not set.");
+            return;
+        }
+
+        std::ofstream csv_file;
+
+        csv_file.open(saveTrajectoryDirectory);
+        csv_file << "#timestamp, tx, ty, tz, qx, qy, qz, qw\n";
+
+        for (auto& pose : globalPath.poses)
+        {
+            csv_file << pose.header.stamp << ", " << pose.pose.position.x << ", " << pose.pose.position.y << ", "
+                << pose.pose.position.z << ", " << pose.pose.orientation.x << ", " << pose.pose.orientation.y << ", "
+                << pose.pose.orientation.z << ", " << pose.pose.orientation.w << std::endl;
+        }
+
+        csv_file.close();
+        ROS_INFO("Trajectory saved.");
+    }
+}
