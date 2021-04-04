@@ -82,8 +82,8 @@ lio_sam:
   mappingSurfLeafSize: 0.4                      # default: 0.4 - outdoor, 0.2 - indoor
 
   # robot motion constraint (in case you are using a 2D robot)
-  z_tollerance: 0.5                            # meters
-  rotation_tollerance: 0.1                     # radians
+  z_tollerance: 100.0                           # meters
+  rotation_tollerance: 1.5                      # radians
 
   # CPU Params
   numberOfCores: 10                              # number of cores for mapping optimization
