@@ -80,6 +80,10 @@ public:
     ros::Subscriber subGPS;
     ros::Subscriber subLoop;
 
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tf2Listener;
+    geometry_msgs::TransformStamped lidar2base;
+
     std::deque<nav_msgs::Odometry> gpsQueue;
     lio_sam::cloud_info cloudInfo;
 

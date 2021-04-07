@@ -1,14 +1,18 @@
 #include "utility.h"
 #include "imuPreintegration.hpp"
 
-TransformFusion::TransformFusion()
+TransformFusion::TransformFusion() : tf2Listener(tfbuffer)
 {
+    tfbuffer.setUsingDedicatedThread(true);
+
     if(lidarFrame != baselinkFrame)
     {
         try
         {
             tfListener.waitForTransform(lidarFrame, baselinkFrame, ros::Time(0), ros::Duration(3.0));
             tfListener.lookupTransform(lidarFrame, baselinkFrame, ros::Time(0), lidar2Baselink);
+
+            lidar_tf2_base = tfbuffer.lookupTransform(lidarFrame, baselinkFrame, ros::Time(0));
         }
         catch (tf::TransformException ex)
         {
@@ -99,7 +103,9 @@ void TransformFusion::imuOdometryHandler(const nav_msgs::Odometry::ConstPtr& odo
         geometry_msgs::PoseStamped pose_stamped;
         pose_stamped.header.stamp = imuOdomQueue.back().header.stamp;
         pose_stamped.header.frame_id = odometryFrame;
-        pose_stamped.pose = laserOdometry.pose.pose;
+
+        if(lidarFrame != baselinkFrame)
+            tf2::doTransform(laserOdometry.pose.pose, pose_stamped.pose, lidar_tf2_base);
         imuPath.poses.push_back(pose_stamped);
         while(!imuPath.poses.empty() && imuPath.poses.front().header.stamp.toSec() < lidarOdomTime - 1.0)
             imuPath.poses.erase(imuPath.poses.begin());

@@ -11,8 +11,10 @@ using symbol_shorthand::V; // Vel   (xdot,ydot,zdot)
 using symbol_shorthand::B; // Bias  (ax,ay,az,gx,gy,gz)
 using symbol_shorthand::G; // GPS pose
 
-mapOptimization::mapOptimization()
+mapOptimization::mapOptimization() : tf2Listener(tfBuffer)
 {
+    tfBuffer.setUsingDedicatedThread(true);
+
     ISAM2Params parameters;
     parameters.relinearizeThreshold = 0.1;
     parameters.relinearizeSkip = 1;
@@ -88,6 +90,17 @@ void mapOptimization::allocateMemory()
     for (int i = 0; i < 6; ++i){
         transformTobeMapped[i] = 0;
     }
+
+
+    try{
+      lidar2base = tfBuffer.lookupTransform(lidarFrame, baselinkFrame, ros::Time(0));
+    }
+    catch (tf2::TransformException &ex) {
+      ROS_WARN("%s",ex.what());
+      ros::Duration(1.0).sleep();
+    }
+    if(lidarFrame != baselinkFrame)
+        transformTobeMapped[5] = -1 * static_cast<float>(lidar2base.transform.translation.z);
 
     matP.setZero();
 }
@@ -1433,7 +1446,15 @@ void mapOptimization::updatePath(const PointTypePose& pose_in)
     pose_stamped.pose.orientation.z = q.z();
     pose_stamped.pose.orientation.w = q.w();
 
-    globalPath.poses.push_back(pose_stamped);
+    // Transform pose form lidar frame to base_link frame if frames are different
+    if(lidarFrame != baselinkFrame)
+    {
+        geometry_msgs::PoseStamped base_link_pose_stamped;
+        tf2::doTransform(pose_stamped.pose, base_link_pose_stamped.pose, lidar2base);
+        globalPath.poses.push_back(base_link_pose_stamped);
+    }
+    else
+        globalPath.poses.push_back(pose_stamped);
 }
 
 void mapOptimization::publishOdometry()

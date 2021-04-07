@@ -38,6 +38,10 @@ public:
     tf::TransformListener tfListener;
     tf::StampedTransform lidar2Baselink;
 
+    tf2_ros::Buffer tfbuffer;
+    tf2_ros::TransformListener tf2Listener;
+    geometry_msgs::TransformStamped lidar_tf2_base;
+
     double lidarOdomTime = -1;
     deque<nav_msgs::Odometry> imuOdomQueue;
 
