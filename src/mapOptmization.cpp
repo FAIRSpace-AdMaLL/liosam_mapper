@@ -1449,7 +1449,7 @@ void mapOptimization::updatePath(const PointTypePose& pose_in)
     // Transform pose form lidar frame to base_link frame if frames are different
     if(lidarFrame != baselinkFrame)
     {
-        geometry_msgs::PoseStamped base_link_pose_stamped;
+        geometry_msgs::PoseStamped base_link_pose_stamped = pose_stamped;
         tf2::doTransform(pose_stamped.pose, base_link_pose_stamped.pose, lidar2base);
         globalPath.poses.push_back(base_link_pose_stamped);
     }
