@@ -6,19 +6,19 @@ lio_sam:
   odomTopic: "odometry/imu"                     # IMU pre-integration odometry, same frequency as IMU
   gpsTopic: "odometry/gpsz"                     # GPS odometry topic from navsat, see module_navsat.launch file
 
-  readBag: "/media/marwan/external_drive/IROS/wednesday/parking_lot_repeat_stroll_5_2021-03-03-18-33-32.bag"
+  readBag: "/media/marwan/external_drive/SAGA/outdoors_simple.bag"
   
   saveToRosbag: true
-  writeBag: "/home/marwan/fyp/lt_data/parking_lot/parking_lot_repeat_stroll_5_2021-03-03-18-33-32.bag"
+  writeBag: "/media/marwan/external_drive/SAGA/outdoors_simple_map.bag"
 
-  saveRawPCD: true
-  saveDeskewedPCD: true
-  saveRegisteredCloudPCD: true
-  saveRegisteredFeaturesPCD: true
-  savePCDDirectory: "/home/marwan/fyp/lt_data/parking_lot/"
+  saveRawPCD: false
+  saveDeskewedPCD: false
+  saveRegisteredCloudPCD: false
+  saveRegisteredFeaturesPCD: false
+  savePCDDirectory: "/media/marwan/external_drive/SAGA/delme/"
   
-  saveTrajectoryCSV: true
-  saveTrajectoryDirectory: "/home/marwan/fyp/lt_data/parking_lot/trajectory.csv"
+  saveTrajectoryCSV: false
+  saveTrajectoryDirectory: "/media/marwan/external_drive/SAGA/outdoors_simple_map.csv"
 
   LMOMaxIterations: 100                          # 60 --> works, 30 --> fails
   # loopRate: 70.0
@@ -41,7 +41,7 @@ lio_sam:
 
   # Sensor Settings
   N_SCAN: 64                                  # number of lidar channel (i.e., 16, 32, 64, 128)
-  Horizon_SCAN: 512                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
+  Horizon_SCAN: 1024                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
   timeField: "t"                           # point timestamp field, Velodyne - "time", Ouster - "t"
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1 
   lidarMinRange: 1.0                          # default: 1.0, minimum lidar range to be used
@@ -56,7 +56,7 @@ lio_sam:
   imuRPYWeight: 0.01
 
   # Extrinsics (lidar -> IMU)
-  extrinsicTrans: [0.16589, 0.0, -0.29841]
+  extrinsicTrans: [0.0, 0.0, 0.0]
   # extrinsicRot: [-1, 0, 0,
   #                 0, 1, 0,
   #                 0, 0, -1]

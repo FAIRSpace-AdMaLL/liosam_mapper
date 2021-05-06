@@ -13,17 +13,17 @@
     </joint> -->
 
     <!-- IMU -->
-    <link name="imu_link"/>
+    <link name="xsens"/>
     <joint name="imu_joint" type="fixed">
-        <origin rpy="0 0 0" xyz="0.14653 0 0.34964"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <parent link="base_link"/>
-        <child link="imu_link"/>
+        <child link="xsens"/>
     </joint>
 
     <!-- OS1 lidar -->
     <link name="os_sensor"/>
     <joint name="os_sensor_joint" type="fixed">
-        <origin rpy="0 0 0" xyz="-0.01936 0 0.64805"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <parent link="base_link"/>
         <child link="os_sensor"/>
     </joint>
