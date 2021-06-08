@@ -67,6 +67,15 @@ We design a system that maintains two graphs and runs up to 10x faster than real
   sudo make install -j8
   ```
 
+## Fix the LZ4 issue on Ubuntu 18.04 + melodic
+
+sudo mv /usr/include/flann/ext/lz4.h /usr/include/flann/ext/lz4.h.bak
+sudo mv /usr/include/flann/ext/lz4hc.h /usr/include/flann/ext/lz4.h.bak
+
+sudo ln -s /usr/include/lz4.h /usr/include/flann/ext/lz4.h
+sudo ln -s /usr/include/lz4hc.h /usr/include/flann/ext/lz4hc.h
+
+
 ## Install
 
 Use the following commands to download and compile the package.
