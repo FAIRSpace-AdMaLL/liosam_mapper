@@ -18,4 +18,6 @@
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch"/>
 
+    <include file="$(find jaguar4x4_2014)/launch/run_bag.launch"/>
+
 </launch>

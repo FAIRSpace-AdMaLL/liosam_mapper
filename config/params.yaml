@@ -4,7 +4,7 @@ lio_sam:
   pointCloudTopic: "/os_cloud_node/points"      # Point cloud data
   imuTopic: "/imu/data"                         # IMU data
   odomTopic: "odometry/imu"                     # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "odometry/gpsz"                      # GPS odometry topic from navsat, see module_navsat.launch file
+  gpsTopic: "odometry/gps"                      # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
   lidarFrame: "os_sensor"
@@ -15,8 +15,8 @@ lio_sam:
   # GPS Settings
   useImuHeadingInitialization: false           # if using GPS data, set to "true"
   useGpsElevation: false                       # if GPS elevation is bad, set to "false"
-  gpsCovThreshold: 2.0                        # m^2, threshold for using GPS data
-  poseCovThreshold: 25.0                      # m^2, threshold for using GPS data
+  gpsCovThreshold: 10.0                        # m^2, threshold for using GPS data
+  poseCovThreshold: 5.0                      # m^2, threshold for using GPS data
   
   # Export settings
   savePCD: false                              # https://github.com/TixiaoShan/LIO-SAM/issues/3
@@ -25,7 +25,7 @@ lio_sam:
   # Sensor Settings
   sensor: ouster                              # lidar sensor type, either 'velodyne' or 'ouster'
   N_SCAN: 64                                  # number of lidar channel (i.e., 16, 32, 64, 128)
-  Horizon_SCAN: 512                           # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
+  Horizon_SCAN: 1024                           # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1
   lidarMinRange: 1.0                          # default: 1.0, minimum lidar range to be used
   lidarMaxRange: 1000.0                       # default: 1000.0, maximum lidar range to be used
@@ -69,7 +69,7 @@ lio_sam:
   rotation_tollerance: 0.1                     # radians
 
   # CPU Params
-  numberOfCores: 4                              # number of cores for mapping optimization
+  numberOfCores: 10                              # number of cores for mapping optimization
   mappingProcessInterval: 0.15                  # seconds, regulate mapping frequency
 
   # Surrounding map
@@ -105,7 +105,7 @@ navsat:
   wait_for_datum: false
   delay: 0.0
   magnetic_declination_radians: 0
-  yaw_offset: 0
+  yaw_offset: -1.57
   zero_altitude: true
   broadcast_utm_transform: false
   broadcast_utm_transform_as_parent_frame: false
@@ -128,7 +128,7 @@ ekf_gps:
   # -------------------------------------
   # External IMU:
   # -------------------------------------
-  imu0: imu_correct
+  imu0: /imu/data
   # make sure the input is aligned with ROS REP105. "imu_correct" is manually transformed by myself. EKF can also transform the data using tf between your imu and base_link
   imu0_config: [false, false, false,
                 true,  true,  true,
@@ -141,7 +141,7 @@ ekf_gps:
   # -------------------------------------
   # Odometry (From Navsat):
   # -------------------------------------
-  odom0: odometry/gps
+  odom0: /odometry/gps
   odom0_config: [true,  true,  true,
                  false, false, false,
                  false, false, false,
