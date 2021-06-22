@@ -5,8 +5,20 @@
 #include "mapOptmization.hpp"
 
 #include <rosbag/bag.h>
+#include <ros/service.h>
 #include <rosbag/view.h>
 #include <boost/foreach.hpp>
+
+#include "ouster/lidar_scan.h"
+#include "ouster/types.h"
+#include "ouster_ros/OSConfigSrv.h"
+#include "ouster_ros/PacketMsg.h"
+#include "ouster_ros/ros.h"
+
+#include <algorithm>
+#include <chrono>
+#include <memory>
+
 
 // subscribe<nav_msgs::Odometry>("lio_sam/mapping/odometry", 5, &TransformFusion::lidarOdometryHandler, this, ros::TransportHints().tcpNoDelay()); Done
 // pubLaserOdometryGlobal = nh.advertise<nav_msgs::Odometry> ("lio_sam/mapping/odometry", 1); Done
@@ -41,6 +53,7 @@
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "lio_sam_offline");
+    ros::NodeHandle nh;
 
     TransformFusion TF;
     IMUPreintegration ImuP;
@@ -56,6 +69,29 @@ int main(int argc, char** argv)
     ros::Rate rate(MO.loopRate);
     rosbag::Bag read_bag;
     read_bag.open(MO.readBag, rosbag::bagmode::Read);
+
+    // Get sensor metadata
+    ouster_ros::OSConfigSrv cfg{};
+    auto client = nh.serviceClient<ouster_ros::OSConfigSrv>("/os_node/os_config");
+    client.waitForExistence();
+    if (!client.call(cfg)) 
+    {
+        ROS_ERROR("Calling config service failed");
+        return EXIT_FAILURE;
+    }
+
+    auto info = ouster::sensor::parse_metadata(cfg.response.metadata);
+    uint32_t H = info.format.pixels_per_column;
+    uint32_t W = info.format.columns_per_frame;
+
+    auto pf = ouster::sensor::get_format(info);
+
+    auto xyz_lut = ouster::make_xyz_lut(info);
+
+    ouster_ros::Cloud cloud{W, H};
+    ouster::LidarScan ls{W, H};
+
+    ouster::ScanBatcher batch(W, pf);
 
     ROS_INFO("listening to:");
     ROS_INFO(MO.imuTopic.c_str());
@@ -120,11 +156,27 @@ int main(int argc, char** argv)
                 IP.imuHandler(imu_msg);
             }
 
-            sensor_msgs::PointCloud2::ConstPtr pointcloud_msg = m.instantiate<sensor_msgs::PointCloud2>();
-            if (pointcloud_msg)
+            ouster_ros::PacketMsg::ConstPtr packet_msg = m.instantiate<ouster_ros::PacketMsg>();
+            sensor_msgs::PointCloud2 pointcloud_msg;
+            if (packet_msg)
             {
                 // ROS_INFO("Pub a PointCloud");
-                IP.cloudHandler(pointcloud_msg);
+                if (batch(packet_msg->buf.data(), ls))
+                {
+                    auto h = std::find_if(
+                        ls.headers.begin(), ls.headers.end(), [](const auto& h) {
+                            return h.timestamp != std::chrono::nanoseconds{0};
+                        });
+                    if (h != ls.headers.end())
+                    {
+                        scan_to_cloud(xyz_lut, h->timestamp, ls, cloud);
+
+                        pointcloud_msg = ouster_ros::cloud_to_cloud_msg(cloud, h->timestamp, "/os_sensor"); 
+                        
+                        IP.cloudHandler(boost::make_shared<sensor_msgs::PointCloud2 const>(pointcloud_msg));
+                    }
+                }
+
             }
 
             // nav_msgs::Odometry::ConstPtr gps_msg = m.instantiate<nav_msgs::Odometry>();

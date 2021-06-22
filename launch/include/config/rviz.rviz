@@ -427,14 +427,14 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 10
-            Min Value: -10
+            Max Value: 4.141616344451904
+            Min Value: -3.33195161819458
             Value: true
           Axis: Z
           Channel Name: intensity
           Class: rviz/PointCloud2
           Color: 115; 210; 22
-          Color Transformer: FlatColor
+          Color Transformer: AxisColor
           Decay Time: 0
           Enabled: true
           Invert Rainbow: false
@@ -535,7 +535,8 @@ Visualization Manager:
           Marker Topic: /lio_sam/mapping/loop_closure_constraints
           Name: Loop constraint
           Namespaces:
-            {}
+            loop_edges: true
+            loop_nodes: true
           Queue Size: 100
           Value: true
       Enabled: true
@@ -586,7 +587,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 138.91616821289062
+      Distance: 58.81884002685547
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -601,10 +602,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5047963857650757
+      Pitch: 0.4247974157333374
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 4.3967790603637695
+      Yaw: 4.656785011291504
     Saved: ~
 Window Geometry:
   Displays:

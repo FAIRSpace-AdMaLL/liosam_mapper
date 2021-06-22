@@ -18,6 +18,11 @@
 
     <node pkg="$(arg project)" type="quat_to_euler.py" name="quat_to_euler" output="screen"/> -->
 
+    <node pkg="ouster_ros" name="os_node" type="os_node" output="screen" required="true">
+        <param name="~/replay" value="true"/>
+        <param name="~/metadata" value="/home/jaguar/ouster_metadata.json"/>
+    </node>
+
     <!--- Run Rviz-->
     <include file="$(find lio_sam)/launch/include/module_rviz.launch"/>
 
