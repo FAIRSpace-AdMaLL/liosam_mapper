@@ -20,7 +20,7 @@
 
     <node pkg="ouster_ros" name="os_node" type="os_node" output="screen" required="true">
         <param name="~/replay" value="true"/>
-        <param name="~/metadata" value="/home/jaguar/ouster_metadata.json"/>
+        <param name="~/metadata" value="$(find jaguar4x4_2014)/config/ouster_metadata.json"/>
     </node>
 
     <!--- Run Rviz-->
