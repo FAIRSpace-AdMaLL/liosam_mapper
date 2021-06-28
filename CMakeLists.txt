@@ -25,7 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(OpenMP REQUIRED)
 find_package(PCL REQUIRED QUIET)
-find_package(OpenCV REQUIRED QUIET)
+find_package(OpenCV 4.5.3 REQUIRED QUIET)
 find_package(GTSAM REQUIRED QUIET)
 
 add_message_files(
