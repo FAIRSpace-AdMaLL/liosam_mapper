@@ -303,7 +303,7 @@ public:
 
         while (!imuQueue.empty())
         {
-            if (imuQueue.front().header.stamp.toSec() < timeScanCur - 0.01)
+            if (imuQueue.front().header.stamp.toSec() < timeScanCur - 0.1)
                 imuQueue.pop_front();
             else
                 break;

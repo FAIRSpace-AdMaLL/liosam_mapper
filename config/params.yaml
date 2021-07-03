@@ -15,7 +15,7 @@ lio_sam:
   # GPS Settings
   useImuHeadingInitialization: false           # if using GPS data, set to "true"
   useGpsElevation: false                       # if GPS elevation is bad, set to "false"
-  gpsCovThreshold: 10.0                        # m^2, threshold for using GPS data
+  gpsCovThreshold: 15.0                        # m^2, threshold for using GPS data
   poseCovThreshold: 5.0                      # m^2, threshold for using GPS data
   
   # Export settings
@@ -105,7 +105,7 @@ navsat:
   wait_for_datum: false
   delay: 0.0
   magnetic_declination_radians: 0
-  yaw_offset: -1.57
+  yaw_offset: 1.57
   zero_altitude: true
   broadcast_utm_transform: false
   broadcast_utm_transform_as_parent_frame: false
