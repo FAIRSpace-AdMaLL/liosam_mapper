@@ -35,6 +35,9 @@
   <build_depend>nav_msgs</build_depend>
   <run_depend>nav_msgs</run_depend>
 
+  <build_depend>ouster_ros</build_depend>
+  <run_depend>ouster_ros</run_depend>
+
   <build_depend>message_generation</build_depend>
   <run_depend>message_generation</run_depend>
   <build_depend>message_runtime</build_depend>

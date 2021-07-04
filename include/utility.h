@@ -155,8 +155,7 @@ public:
     int LMOMaxIterations;
 
     std::string readBag;
-    std::string writeBag;
-    std::string saveTrajectoryDirectory;
+    std::string saveDir;
 
     bool saveRawPCD;
     bool saveDeskewedPCD;
@@ -174,7 +173,6 @@ public:
         nh.param<std::string>("lio_sam/odomTopic", odomTopic, "odometry/imu");
         nh.param<std::string>("lio_sam/gpsTopic", gpsTopic, "odometry/gps");
         nh.param<std::string>("lio_sam/readBag", readBag, "");
-        nh.param<std::string>("lio_sam/writeBag", writeBag, "");
         nh.param<double>("lio_sam/loopRate", loopRate, 1000000.0);
         nh.param<int>("lio_sam/LMOMaxIterations", LMOMaxIterations, 30);
 
@@ -193,9 +191,8 @@ public:
         nh.param<bool>("lio_sam/saveRegisteredCloudPCD", saveRegisteredCloudPCD, false);
         nh.param<bool>("lio_sam/saveRegisteredFeaturesPCD", saveRegisteredFeaturesPCD, false);
         nh.param<bool>("lio_sam/saveToRosbag", saveToRosbag, false);
-        nh.param<std::string>("lio_sam/savePCDDirectory", savePCDDirectory, "/Downloads/LOAM/");
         nh.param<bool>("lio_sam/saveTrajectoryCSV", saveTrajectoryCSV, false);
-        nh.param<std::string>("lio_sam/saveTrajectoryDirectory", saveTrajectoryDirectory, "");
+        nh.param<std::string>("lio_sam/saveDir", saveDir, "");
 
         nh.param<int>("lio_sam/N_SCAN", N_SCAN, 16);
         nh.param<int>("lio_sam/Horizon_SCAN", Horizon_SCAN, 1800);
