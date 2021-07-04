@@ -8,17 +8,14 @@ lio_sam:
 
   readBag: "/home/jaguar/beach_1_2021-06-08-18-04-54.bag"
   
-  saveToRosbag: true
-  writeBag: "/home/jaguar/beach_data/beach_1/maps_and_traj.bag"
-
-  saveRawPCD: true
-  saveDeskewedPCD: true
-  saveRegisteredCloudPCD: true
-  saveRegisteredFeaturesPCD: true
-  savePCDDirectory: "/home/jaguar/beach_data/beach_1/"
-  
-  saveTrajectoryCSV: true
-  saveTrajectoryDirectory: "/home/jaguar/beach_data/beach_1/trajectory.csv"
+  # Map and trajectory saving
+  saveDir: /home/marwan/ndt/delme               # Saving directory
+  saveToRosbag: True                            # Save global map and trajectory to a rosbag
+  saveTrajectoryCSV: True                       # Save trajectory to CSV
+  saveRawPCD: True                              # Save raw lidar pointclouds to PCDc (lidar frame)
+  saveDeskewedPCD: True                         # Save deskewed pointclouds to PCDs (lidar frame)
+  saveRegisteredCloudPCD: True                  # Save registered pointclouds to PCDs (map frame)
+  saveRegisteredFeaturesPCD: True               # Save registered feature pointclouds to PCDs (map frame)
 
   LMOMaxIterations: 100                          # 60 --> works, 30 --> fails
   # loopRate: 70.0
