@@ -125,6 +125,7 @@ int main(int argc, char** argv)
         IP.imuHandler(imu_msg);
       }
 
+      // Read packet msgs
       ouster_ros::PacketMsg::ConstPtr packet_msg = m.instantiate<ouster_ros::PacketMsg>();
       sensor_msgs::PointCloud2 pointcloud_msg;
       if (packet_msg)
@@ -143,6 +144,14 @@ int main(int argc, char** argv)
             IP.cloudHandler(boost::make_shared<sensor_msgs::PointCloud2 const>(pointcloud_msg));
           }
         }
+      }
+
+      // Read pointcloud2 msgs
+      sensor_msgs::PointCloud2::ConstPtr pointcloud_msg_ptr = m.instantiate<sensor_msgs::PointCloud2>();
+      if (pointcloud_msg_ptr)
+      {
+        // ROS_INFO("Pub a PointCloud");
+        IP.cloudHandler(pointcloud_msg_ptr);
       }
 
       rate.sleep();
