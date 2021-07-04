@@ -12,6 +12,14 @@ lio_sam:
   odometryFrame: "odom"
   mapFrame: "map"
 
+  # Map and trajectory saving
+  saveDir: /home/marwan/ndt/delme               # Saving directory
+  saveToRosbag: True                            # Save global map and trajectory to rosbag
+  saveTrajectoryCSV: True                       # Save trajectory to CSV
+  saveDeskewedPCD: True                         # Save deskewed pointclouds to PCDs (lidar frame)
+  saveRegisteredCloudPCD: True                  # Save registered pointclouds to PCDs (map frame)
+  saveRegisteredFeaturesPCD: True               # Save registered feature pointclouds to PCDs (map frame)
+
   # GPS Settings
   useImuHeadingInitialization: false           # if using GPS data, set to "true"
   useGpsElevation: false                       # if GPS elevation is bad, set to "false"

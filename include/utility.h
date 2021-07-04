@@ -150,6 +150,14 @@ public:
     float globalMapVisualizationPoseDensity;
     float globalMapVisualizationLeafSize;
 
+    // Saving params
+    std::string saveDir;
+    bool saveToRosbag;
+    bool saveTrajectoryCSV;
+    bool saveDeskewedPCD;
+    bool saveRegisteredCloudPCD;
+    bool saveRegisteredFeaturesPCD;
+
     ParamServer()
     {
         nh.param<std::string>("/robot_id", robot_id, "roboat");
@@ -163,6 +171,13 @@ public:
         nh.param<std::string>("lio_sam/baselinkFrame", baselinkFrame, "base_link");
         nh.param<std::string>("lio_sam/odometryFrame", odometryFrame, "odom");
         nh.param<std::string>("lio_sam/mapFrame", mapFrame, "map");
+
+        nh.param<std::string>("lio_sam/saveDir", saveDir, "");
+        nh.param<bool>("lio_sam/saveToRosbag", saveToRosbag, false);
+        nh.param<bool>("lio_sam/saveTrajectoryCSV", saveTrajectoryCSV, false);
+        nh.param<bool>("lio_sam/saveDeskewedPCD", saveDeskewedPCD, false);
+        nh.param<bool>("lio_sam/saveRegisteredCloudPCD", saveRegisteredCloudPCD, false);
+        nh.param<bool>("lio_sam/saveRegisteredFeaturesPCD", saveRegisteredFeaturesPCD, false);
 
         nh.param<bool>("lio_sam/useImuHeadingInitialization", useImuHeadingInitialization, false);
         nh.param<bool>("lio_sam/useGpsElevation", useGpsElevation, false);

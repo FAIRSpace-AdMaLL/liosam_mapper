@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   message_generation
+  rosbag
 )
 
 find_package(OpenMP REQUIRED)

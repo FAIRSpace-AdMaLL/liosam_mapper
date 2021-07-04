@@ -1,5 +1,8 @@
 #include "utility.h"
 #include "lio_sam/cloud_info.h"
+#include <std_srvs/Empty.h>
+#include <rosbag/bag.h>
+#include <rosbag/view.h>
 
 #include <gtsam/geometry/Rot3.h>
 #include <gtsam/geometry/Pose3.h>
@@ -76,6 +79,8 @@ public:
     ros::Subscriber subGPS;
     ros::Subscriber subLoop;
 
+    ros::ServiceServer saveMapService;
+
     std::deque<nav_msgs::Odometry> gpsQueue;
     lio_sam::cloud_info cloudInfo;
 
@@ -148,6 +153,8 @@ public:
     Eigen::Affine3f incrementalOdometryAffineFront;
     Eigen::Affine3f incrementalOdometryAffineBack;
 
+    std::vector<sensor_msgs::PointCloud2> deskewedCloud;
+    sensor_msgs::PointCloud2 globalMapToSave;
 
     mapOptimization()
     {
@@ -173,6 +180,8 @@ public:
         pubRecentKeyFrames    = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/map_local", 1);
         pubRecentKeyFrame     = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/cloud_registered", 1);
         pubCloudRegisteredRaw = nh.advertise<sensor_msgs::PointCloud2>("lio_sam/mapping/cloud_registered_raw", 1);
+
+        saveMapService = nh.advertiseService("lio_sam/save_everything", &mapOptimization::saveMapAndTrajectory, this);
 
         downSizeFilterCorner.setLeafSize(mappingCornerLeafSize, mappingCornerLeafSize, mappingCornerLeafSize);
         downSizeFilterSurf.setLeafSize(mappingSurfLeafSize, mappingSurfLeafSize, mappingSurfLeafSize);
@@ -331,21 +340,6 @@ public:
         return thisPose6D;
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     void visualizeGlobalMapThread()
     {
         ros::Rate rate(0.2);
@@ -360,12 +354,12 @@ public:
         cout << "****************************************************" << endl;
         cout << "Saving map to pcd files ..." << endl;
         // create directory and remove old files;
-        savePCDDirectory = std::getenv("HOME") + savePCDDirectory;
-        int unused = system((std::string("exec rm -r ") + savePCDDirectory).c_str());
-        unused = system((std::string("mkdir ") + savePCDDirectory).c_str());
+        saveDir = std::getenv("HOME") + saveDir;
+        int unused = system((std::string("exec rm -r ") + saveDir).c_str());
+        unused = system((std::string("mkdir ") + saveDir).c_str());
         // save key frame transformations
-        pcl::io::savePCDFileASCII(savePCDDirectory + "trajectory.pcd", *cloudKeyPoses3D);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "transformations.pcd", *cloudKeyPoses6D);
+        pcl::io::savePCDFileASCII(saveDir + "trajectory.pcd", *cloudKeyPoses3D);
+        pcl::io::savePCDFileASCII(saveDir + "transformations.pcd", *cloudKeyPoses6D);
         // extract global point cloud map        
         pcl::PointCloud<PointType>::Ptr globalCornerCloud(new pcl::PointCloud<PointType>());
         pcl::PointCloud<PointType>::Ptr globalCornerCloudDS(new pcl::PointCloud<PointType>());
@@ -380,15 +374,15 @@ public:
         // down-sample and save corner cloud
         downSizeFilterCorner.setInputCloud(globalCornerCloud);
         downSizeFilterCorner.filter(*globalCornerCloudDS);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "cloudCorner.pcd", *globalCornerCloudDS);
+        pcl::io::savePCDFileASCII(saveDir + "cloudCorner.pcd", *globalCornerCloudDS);
         // down-sample and save surf cloud
         downSizeFilterSurf.setInputCloud(globalSurfCloud);
         downSizeFilterSurf.filter(*globalSurfCloudDS);
-        pcl::io::savePCDFileASCII(savePCDDirectory + "cloudSurf.pcd", *globalSurfCloudDS);
+        pcl::io::savePCDFileASCII(saveDir + "cloudSurf.pcd", *globalSurfCloudDS);
         // down-sample and save global point cloud map
         *globalMapCloud += *globalCornerCloud;
         *globalMapCloud += *globalSurfCloud;
-        pcl::io::savePCDFileASCII(savePCDDirectory + "cloudGlobal.pcd", *globalMapCloud);
+        pcl::io::savePCDFileASCII(saveDir + "cloudGlobal.pcd", *globalMapCloud);
         cout << "****************************************************" << endl;
         cout << "Saving map to pcd files completed" << endl;
     }
@@ -437,19 +431,8 @@ public:
         downSizeFilterGlobalMapKeyFrames.setLeafSize(globalMapVisualizationLeafSize, globalMapVisualizationLeafSize, globalMapVisualizationLeafSize); // for global map visualization
         downSizeFilterGlobalMapKeyFrames.setInputCloud(globalMapKeyFrames);
         downSizeFilterGlobalMapKeyFrames.filter(*globalMapKeyFramesDS);
-        publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame);
+        globalMapToSave = publishCloud(&pubLaserCloudSurround, globalMapKeyFramesDS, timeLaserInfoStamp, odometryFrame);
     }
-
-
-
-
-
-
-
-
-
-
-
 
     void loopClosureThread()
     {
@@ -1516,6 +1499,9 @@ public:
 
         // save path for visualization
         updatePath(thisPose6D);
+
+        // Store raw lidar data
+        deskewedCloud.push_back(cloudInfo.cloud_deskewed);
     }
 
     void correctPoses()
@@ -1672,6 +1658,112 @@ public:
             globalPath.header.frame_id = odometryFrame;
             pubPath.publish(globalPath);
         }
+    }
+
+    bool saveMapAndTrajectory(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+    {
+        ROS_INFO("Saving lidar frames to pcd files ...");
+
+        if(saveDir == "")
+        {
+            ROS_ERROR("Saving directory is not configured!");
+            return false;
+        }
+
+        assert(deskewedCloud.size() == globalPath.poses.size());
+        assert(cornerCloudKeyFrames.size() == globalPath.poses.size());
+
+        pcl::PointCloud<PointType>::Ptr cloudOut(new pcl::PointCloud<PointType>());;
+        PointTypePose thisPose6D;
+
+        sensor_msgs::PointCloud2 cur_raw_cloud_msg;
+        char file_name_buffer[11];  // xxxxxx.pcd
+
+        if(saveDir.back() != '/')
+            saveDir.push_back('/');
+        
+        ROS_INFO_STREAM("Saving to: " << saveDir);
+
+        int unused;
+        if(saveDeskewedPCD)
+            unused = system(std::string("mkdir -p " + saveDir + "deskewed_cloud_lidar_frame/").c_str());
+        if(saveRegisteredCloudPCD)
+            unused = system(std::string("mkdir -p " + saveDir + "registered_cloud_map_frame/").c_str());
+        if(saveRegisteredFeaturesPCD)
+            unused = system(std::string("mkdir -p " + saveDir + "registered_feature_cloud_map_frame/").c_str());
+
+        if(!(saveDeskewedPCD || saveRegisteredCloudPCD || saveRegisteredFeaturesPCD))
+        {
+            ROS_INFO("No PCDs to save.");
+        }
+
+        for (int i = 0; i < globalPath.poses.size(); i++) {
+            sprintf(file_name_buffer, "%06d.pcd", i);
+            string file_name(file_name_buffer);
+
+            if(saveDeskewedPCD)
+            {
+                // De-skewed scans in the lidar frame. These are they same scans that make up registered_cloud_map_frame.
+                pcl::fromROSMsg(deskewedCloud[i], *cloudOut);
+                pcl::io::savePCDFileBinary(saveDir + "deskewed_cloud_lidar_frame/" + file_name, *cloudOut);
+            }
+            
+            thisPose6D = cloudKeyPoses6D->points[i];
+
+            if(saveRegisteredCloudPCD)
+            {
+                // De-skewed scans in the map frame, thus creating the full high res map when concatenated. 
+                *cloudOut = *transformPointCloud(cloudOut, &thisPose6D);
+                pcl::io::savePCDFileBinary(saveDir + "registered_cloud_map_frame/" + file_name, *cloudOut);
+            }
+
+            if(saveRegisteredFeaturesPCD)
+            {
+                // Feature clouds in the map frame, thus creating a map based on feature when concatenated.
+                cloudOut->clear();
+                *cloudOut += *transformPointCloud(cornerCloudKeyFrames[i], &thisPose6D);
+                *cloudOut += *transformPointCloud(surfCloudKeyFrames[i], &thisPose6D);
+                pcl::io::savePCDFileBinary(saveDir + "registered_feature_cloud_map_frame/" + file_name, *cloudOut);
+            }
+            
+            ROS_INFO_STREAM(file_name << " saved.");
+        }
+
+        if (saveTrajectoryCSV)
+        {
+            ROS_INFO("Saving global trajectory to CSV...");
+
+            std::ofstream csv_file;
+
+            csv_file.open(saveDir + "trajectory.csv");
+            csv_file << "#timestamp, tx, ty, tz, qx, qy, qz, qw\n";
+
+            for (auto& pose : globalPath.poses)
+            {
+                csv_file << pose.header.stamp << ", " << pose.pose.position.x << ", " << pose.pose.position.y << ", "
+                    << pose.pose.position.z << ", " << pose.pose.orientation.x << ", " << pose.pose.orientation.y << ", "
+                    << pose.pose.orientation.z << ", " << pose.pose.orientation.w << std::endl;
+            }
+
+            csv_file.close();
+            ROS_INFO("Trajectory saved.");
+        }
+
+        if(saveToRosbag)
+        {
+            ROS_INFO("Saving global map and path");
+
+            rosbag::Bag write_bag;
+            write_bag.open(saveDir + "map_and_trajectory.bag", rosbag::bagmode::Write);
+
+            write_bag.write("/lio_sam/mapping/map_global", ros::Time::now(), globalMapToSave);
+            write_bag.write("/lio_sam/mapping/path", ros::Time::now(), globalPath);
+            write_bag.close();
+            
+            ROS_INFO("Rosbag saved!");
+        }
+
+        return true;
     }
 };
 
